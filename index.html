@@ -1,0 +1,1996 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0f172a">
+<title>NJ Driver Test Pro — Practice for May 28</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0b1220;
+    --bg-elev: #111a2e;
+    --bg-elev-2: #182547;
+    --card: rgba(255,255,255,0.04);
+    --card-border: rgba(255,255,255,0.08);
+    --text: #e6edf7;
+    --text-dim: #94a3b8;
+    --text-muted: #64748b;
+    --accent: #10b981;
+    --accent-2: #06b6d4;
+    --warn: #f59e0b;
+    --danger: #ef4444;
+    --info: #3b82f6;
+    --shadow: 0 8px 32px rgba(0,0,0,0.35);
+    --radius: 16px;
+    --radius-sm: 10px;
+  }
+  [data-theme="light"] {
+    --bg: #f1f5f9;
+    --bg-elev: #ffffff;
+    --bg-elev-2: #f8fafc;
+    --card: #ffffff;
+    --card-border: #e2e8f0;
+    --text: #0f172a;
+    --text-dim: #475569;
+    --text-muted: #64748b;
+    --shadow: 0 4px 20px rgba(15,23,42,0.08);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  html, body { height: 100%; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    background: var(--bg);
+    background-image:
+      radial-gradient(at 20% 0%, rgba(16,185,129,0.10) 0px, transparent 50%),
+      radial-gradient(at 80% 0%, rgba(59,130,246,0.10) 0px, transparent 50%);
+    min-height: 100vh;
+    color: var(--text);
+    padding-bottom: 100px;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  [data-theme="light"] body { background-image:
+    radial-gradient(at 20% 0%, rgba(16,185,129,0.06) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(59,130,246,0.06) 0px, transparent 50%); }
+
+  /* ===== Header ===== */
+  .topbar {
+    position: sticky; top: 0; z-index: 90;
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--card-border);
+  }
+  .topbar-inner {
+    max-width: 1200px; margin: 0 auto;
+    padding: 14px 20px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 17px; }
+  .brand .logo {
+    width: 36px; height: 36px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    display: grid; place-items: center; font-size: 20px;
+    box-shadow: 0 4px 12px rgba(16,185,129,0.35);
+  }
+  .brand-sub { font-size: 11px; color: var(--text-dim); font-weight: 500; margin-top: 1px; }
+  .top-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
+  .icon-btn {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--card); border: 1px solid var(--card-border);
+    color: var(--text); cursor: pointer; font-size: 16px;
+    display: grid; place-items: center; transition: all 0.15s;
+  }
+  .icon-btn:hover { background: var(--bg-elev-2); transform: translateY(-1px); }
+
+  /* ===== Layout ===== */
+  .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
+  .grid-2 { display: grid; grid-template-columns: 1fr; gap: 16px; }
+  @media (min-width: 900px) { .grid-2 { grid-template-columns: 1.2fr 1fr; gap: 20px; } }
+
+  .card {
+    background: var(--card); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 20px;
+    box-shadow: var(--shadow);
+  }
+  [data-theme="dark"] .card, :root:not([data-theme="light"]) .card {
+    background: rgba(255,255,255,0.04);
+  }
+  .card h2 { font-size: 16px; font-weight: 700; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .card .muted { color: var(--text-dim); font-size: 13px; }
+
+  /* ===== Countdown ===== */
+  .countdown-card {
+    background: linear-gradient(135deg, #1e3a8a 0%, #6d28d9 100%);
+    color: #fff; padding: 22px; border-radius: var(--radius);
+    border: none; position: relative; overflow: hidden;
+  }
+  .countdown-card::before {
+    content: ""; position: absolute; right: -40px; top: -40px;
+    width: 160px; height: 160px; background: rgba(255,255,255,0.08);
+    border-radius: 50%;
+  }
+  .countdown-label { font-size: 13px; opacity: 0.85; font-weight: 500; }
+  .countdown-date { font-size: 15px; font-weight: 600; margin-top: 4px; opacity: 0.95; }
+  .countdown-blocks { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 16px; position: relative; }
+  .cd-block {
+    background: rgba(255,255,255,0.15); border-radius: 10px;
+    padding: 10px 4px; text-align: center; backdrop-filter: blur(6px);
+  }
+  .cd-block .v { font-size: 22px; font-weight: 800; line-height: 1; }
+  .cd-block .l { font-size: 10px; opacity: 0.85; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  @media (min-width: 600px) { .cd-block .v { font-size: 28px; } }
+
+  /* ===== Progress ring ===== */
+  .progress-row { display: flex; align-items: center; gap: 18px; }
+  .ring-wrap { position: relative; width: 92px; height: 92px; flex-shrink: 0; }
+  .ring-wrap svg { transform: rotate(-90deg); width: 92px; height: 92px; }
+  .ring-wrap circle { fill: none; stroke-width: 9; }
+  .ring-track { stroke: var(--card-border); }
+  .ring-fill { stroke: url(#ringGrad); stroke-linecap: round; transition: stroke-dashoffset 0.6s ease; }
+  .ring-label {
+    position: absolute; inset: 0; display: grid; place-items: center;
+    font-size: 19px; font-weight: 800;
+  }
+  .progress-info { flex: 1; min-width: 0; }
+  .progress-info .title { font-size: 17px; font-weight: 700; }
+  .progress-info .subtitle { color: var(--text-dim); font-size: 13px; margin-top: 2px; }
+  .bar { height: 6px; background: var(--card-border); border-radius: 4px; overflow: hidden; margin-top: 10px; }
+  .bar > i { display: block; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); border-radius: 4px; transition: width 0.4s; }
+
+  /* ===== Stats grid ===== */
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 16px; }
+  @media (min-width: 600px) { .stats { grid-template-columns: repeat(4, 1fr); } }
+  .stat {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    border-radius: var(--radius-sm); padding: 14px; text-align: center;
+  }
+  [data-theme="light"] .stat { background: #f8fafc; }
+  .stat .v { font-size: 22px; font-weight: 800; line-height: 1; }
+  .stat .l { font-size: 11px; color: var(--text-dim); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.4px; }
+  .stat.g .v { color: var(--accent); }
+  .stat.r .v { color: var(--danger); }
+  .stat.b .v { color: var(--info); }
+  .stat.w .v { color: var(--warn); }
+
+  /* ===== Mode buttons ===== */
+  .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (min-width: 600px) { .modes { grid-template-columns: repeat(3, 1fr); } }
+  .mode-btn {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 16px; cursor: pointer;
+    color: var(--text); text-align: left; transition: all 0.18s;
+    display: flex; flex-direction: column; gap: 6px; min-height: 92px;
+  }
+  [data-theme="light"] .mode-btn { background: #fff; }
+  .mode-btn:hover { transform: translateY(-2px); border-color: var(--accent); box-shadow: 0 8px 20px rgba(16,185,129,0.15); }
+  .mode-btn .icon { font-size: 22px; }
+  .mode-btn .name { font-weight: 700; font-size: 15px; }
+  .mode-btn .desc { font-size: 11.5px; color: var(--text-dim); }
+  .mode-btn.primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); border-color: transparent; color: #042f2e; }
+  .mode-btn.primary .desc { color: rgba(4,47,46,0.75); }
+
+  /* ===== Category chips ===== */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    color: var(--text); padding: 7px 12px; border-radius: 999px;
+    font-size: 12.5px; cursor: pointer; transition: all 0.15s;
+    display: inline-flex; align-items: center; gap: 6px; font-weight: 500;
+  }
+  [data-theme="light"] .chip { background: #fff; }
+  .chip:hover { border-color: var(--accent); }
+  .chip .count { background: var(--card-border); padding: 1px 7px; border-radius: 999px; font-size: 11px; font-weight: 600; }
+  .chip.active { background: var(--accent); color: #042f2e; border-color: var(--accent); }
+  .chip.active .count { background: rgba(0,0,0,0.18); color: #042f2e; }
+
+  /* ===== Buttons ===== */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 14px;
+    cursor: pointer; border: none; transition: all 0.15s;
+    font-family: inherit;
+  }
+  .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #042f2e; }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(16,185,129,0.35); }
+  .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--card-border); }
+  .btn-ghost:hover { background: var(--bg-elev-2); }
+  .btn-danger { background: var(--danger); color: #fff; }
+  .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+  .btn-block { width: 100%; }
+
+  /* ===== Quiz screen ===== */
+  .quiz-screen { display: none; }
+  .quiz-header {
+    display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .quiz-meta { font-size: 13px; color: var(--text-dim); font-weight: 500; }
+  .quiz-meta strong { color: var(--text); }
+  .quiz-tag {
+    padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600;
+    background: var(--bg-elev-2); border: 1px solid var(--card-border); color: var(--text-dim);
+  }
+  .quiz-tag.cat { color: var(--accent); border-color: rgba(16,185,129,0.3); }
+  .quiz-tag.timer { color: var(--warn); border-color: rgba(245,158,11,0.3); font-variant-numeric: tabular-nums; }
+  .quiz-tag.timer.danger { color: var(--danger); border-color: rgba(239,68,68,0.4); animation: pulse 1s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: 0.55; } }
+
+  .question-text {
+    font-size: 19px; font-weight: 600; line-height: 1.5;
+    margin: 18px 0 18px;
+  }
+  @media (min-width: 600px) { .question-text { font-size: 21px; } }
+
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .option {
+    background: var(--bg-elev-2); border: 2px solid var(--card-border);
+    border-radius: 12px; padding: 14px 16px; cursor: pointer;
+    display: flex; align-items: flex-start; gap: 12px;
+    transition: all 0.15s; user-select: none;
+  }
+  [data-theme="light"] .option { background: #fff; }
+  .option:hover:not(.disabled) { border-color: var(--accent); transform: translateX(2px); }
+  .option .letter {
+    flex-shrink: 0;
+    width: 30px; height: 30px; border-radius: 8px;
+    background: var(--card-border); color: var(--text);
+    display: grid; place-items: center; font-weight: 700; font-size: 14px;
+  }
+  .option .opt-text { flex: 1; font-size: 14.5px; line-height: 1.45; padding-top: 3px; }
+  .option.correct { border-color: var(--accent); background: rgba(16,185,129,0.15); }
+  .option.correct .letter { background: var(--accent); color: #042f2e; }
+  .option.wrong { border-color: var(--danger); background: rgba(239,68,68,0.12); }
+  .option.wrong .letter { background: var(--danger); color: #fff; }
+  .option.disabled { cursor: default; }
+
+  .explanation {
+    margin-top: 18px;
+    background: linear-gradient(135deg, rgba(59,130,246,0.10), rgba(16,185,129,0.05));
+    border: 1px solid rgba(59,130,246,0.25);
+    border-radius: 12px; padding: 14px 16px;
+    animation: slideIn 0.3s ease;
+  }
+  @keyframes slideIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+  .explanation .e-title { font-size: 12px; font-weight: 700; color: var(--info); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .explanation .e-text { font-size: 14px; line-height: 1.55; color: var(--text); }
+
+  .q-controls {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
+    margin-top: 18px;
+  }
+  .q-controls .btn { padding: 14px; }
+
+  .top-question-bar { display: flex; align-items: center; gap: 10px; margin-bottom: 6px; }
+  .top-question-bar .bar { flex: 1; margin-top: 0; height: 8px; }
+  .flag-btn {
+    background: var(--card); border: 1px solid var(--card-border);
+    color: var(--text-dim); width: 36px; height: 36px; border-radius: 10px;
+    cursor: pointer; font-size: 14px;
+  }
+  .flag-btn.active { color: var(--warn); border-color: var(--warn); background: rgba(245,158,11,0.08); }
+
+  /* ===== Result screen ===== */
+  .result-hero {
+    text-align: center; padding: 18px 0 8px;
+  }
+  .result-icon { font-size: 56px; margin-bottom: 10px; }
+  .result-title { font-size: 24px; font-weight: 800; }
+  .result-sub { color: var(--text-dim); font-size: 14px; margin-top: 6px; }
+  .score-big { font-size: 48px; font-weight: 800; margin: 12px 0 4px; }
+  .score-big.pass { color: var(--accent); }
+  .score-big.fail { color: var(--danger); }
+
+  /* ===== Lists ===== */
+  .q-item {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 12px 14px; margin-bottom: 8px;
+    font-size: 13.5px; line-height: 1.45;
+  }
+  [data-theme="light"] .q-item { background: #fff; }
+  .q-item .q-cat { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 4px; }
+  .q-item .q-ans { color: var(--text-dim); font-size: 12.5px; margin-top: 6px; }
+  .q-item .q-ans.right { color: var(--accent); }
+  .q-item .q-ans.wrong { color: var(--danger); }
+
+  /* ===== Search ===== */
+  .search-input {
+    width: 100%; background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    color: var(--text); padding: 12px 14px; border-radius: 12px;
+    font-family: inherit; font-size: 14px; outline: none;
+    transition: border-color 0.15s;
+  }
+  [data-theme="light"] .search-input { background: #fff; }
+  .search-input:focus { border-color: var(--accent); }
+
+  /* ===== Bottom nav ===== */
+  .bottom-nav {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 80;
+    background: color-mix(in srgb, var(--bg) 88%, transparent);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-top: 1px solid var(--card-border);
+    padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+    display: flex; justify-content: space-around;
+  }
+  .nav-tab {
+    flex: 1; max-width: 130px;
+    display: flex; flex-direction: column; align-items: center; gap: 2px;
+    padding: 6px 4px; border-radius: 10px; cursor: pointer;
+    color: var(--text-dim); transition: all 0.15s;
+    font-size: 11px; font-weight: 600;
+  }
+  .nav-tab .ic { font-size: 20px; }
+  .nav-tab.active { color: var(--accent); }
+
+  /* ===== Empty states ===== */
+  .empty {
+    text-align: center; padding: 40px 20px; color: var(--text-dim);
+  }
+  .empty .ic { font-size: 44px; margin-bottom: 10px; }
+  .empty .t { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+  .empty .s { font-size: 13px; }
+
+  /* ===== Footer credit ===== */
+  .credit {
+    text-align: center; padding: 30px 20px 10px;
+    color: var(--text-dim); font-size: 12px;
+  }
+  .credit .photo {
+    width: 56px; height: 56px; border-radius: 50%;
+    border: 2px solid var(--accent); margin-bottom: 8px;
+    object-fit: cover;
+  }
+  .credit .name { color: var(--text); font-weight: 700; font-size: 13px; margin-bottom: 2px; }
+
+  /* ===== Toast ===== */
+  .toast {
+    position: fixed; bottom: 90px; left: 50%; transform: translateX(-50%) translateY(20px);
+    background: var(--bg-elev); border: 1px solid var(--card-border);
+    color: var(--text); padding: 10px 16px; border-radius: 999px;
+    font-size: 13px; font-weight: 500; box-shadow: var(--shadow);
+    opacity: 0; pointer-events: none; transition: all 0.25s; z-index: 200;
+  }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== Hidden ===== */
+  .hidden { display: none !important; }
+  .screen { animation: fadeIn 0.25s; }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  /* ===== Keyboard hint ===== */
+  .kbd-hint {
+    font-size: 11px; color: var(--text-muted); margin-top: 12px; text-align: center;
+  }
+  .kbd-hint kbd {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    padding: 1px 5px; border-radius: 4px; font-family: monospace; font-size: 11px;
+  }
+
+  /* ===== Study Tools row ===== */
+  .tools-row {
+    display: grid; grid-template-columns: 1fr; gap: 12px;
+  }
+  @media (min-width: 700px) { .tools-row { grid-template-columns: repeat(3, 1fr); } }
+  .tool-btn {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 18px; cursor: pointer; color: var(--text);
+    text-align: left; transition: all 0.18s; position: relative; overflow: hidden;
+    display: flex; align-items: center; gap: 14px;
+  }
+  [data-theme="light"] .tool-btn { background: #fff; }
+  .tool-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(0,0,0,0.18); border-color: var(--accent); }
+  .tool-btn .ic-box {
+    width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+    display: grid; place-items: center; font-size: 26px;
+  }
+  .tool-btn.t1 .ic-box { background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; }
+  .tool-btn.t2 .ic-box { background: linear-gradient(135deg, #8b5cf6, #ec4899); color: #fff; }
+  .tool-btn.t3 .ic-box { background: linear-gradient(135deg, #06b6d4, #10b981); color: #fff; }
+  .tool-btn .t-name { font-weight: 700; font-size: 15px; }
+  .tool-btn .t-desc { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+
+  /* ===== Flashcards ===== */
+  .deck-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .flash-wrap { perspective: 1500px; margin: 18px 0; }
+  .flash-card {
+    position: relative; min-height: 320px;
+    transition: transform 0.6s; transform-style: preserve-3d; cursor: pointer;
+  }
+  .flash-card.flipped { transform: rotateY(180deg); }
+  .flash-face {
+    position: absolute; inset: 0;
+    backface-visibility: hidden; -webkit-backface-visibility: hidden;
+    border-radius: var(--radius); padding: 24px;
+    display: flex; flex-direction: column; justify-content: center;
+    box-shadow: var(--shadow);
+  }
+  .flash-face.front {
+    background: linear-gradient(135deg, var(--bg-elev-2) 0%, var(--bg-elev) 100%);
+    border: 2px solid var(--card-border);
+  }
+  [data-theme="light"] .flash-face.front { background: linear-gradient(135deg, #fff 0%, #f8fafc 100%); }
+  .flash-face.back {
+    background: linear-gradient(135deg, rgba(16,185,129,0.18), rgba(6,182,212,0.12));
+    border: 2px solid var(--accent);
+    transform: rotateY(180deg);
+  }
+  .flash-cat-tag {
+    align-self: flex-start; padding: 4px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 700; background: rgba(16,185,129,0.2);
+    color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px;
+    margin-bottom: 14px;
+  }
+  .flash-q { font-size: 18px; font-weight: 600; line-height: 1.5; flex: 1; display: flex; align-items: center; }
+  @media (min-width: 600px) { .flash-q { font-size: 22px; } }
+  .flash-flip-hint { text-align: center; font-size: 12px; color: var(--text-dim); margin-top: 14px; }
+  .flash-answer-label { font-size: 12px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .flash-answer { font-size: 18px; font-weight: 700; margin-bottom: 12px; }
+  .flash-exp { font-size: 13.5px; line-height: 1.55; color: var(--text-dim); }
+  .flash-controls { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-top: 14px; }
+  .flash-counter { text-align: center; font-size: 13px; color: var(--text-dim); margin-top: 10px; }
+  .flash-rate { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+  .rate-btn { padding: 13px; border-radius: 12px; font-weight: 700; font-size: 14px; cursor: pointer; border: none; font-family: inherit; transition: all 0.15s; }
+  .rate-btn.know { background: rgba(16,185,129,0.15); color: var(--accent); border: 1px solid rgba(16,185,129,0.4); }
+  .rate-btn.know:hover { background: rgba(16,185,129,0.25); }
+  .rate-btn.study { background: rgba(239,68,68,0.12); color: var(--danger); border: 1px solid rgba(239,68,68,0.4); }
+  .rate-btn.study:hover { background: rgba(239,68,68,0.22); }
+
+  /* ===== Mind Map ===== */
+  .mm-wrap { padding: 12px 0; }
+  .mm-center {
+    margin: 0 auto 24px; max-width: 320px;
+    background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    color: #042f2e; padding: 18px 22px; border-radius: 20px;
+    text-align: center; font-weight: 800; font-size: 18px;
+    box-shadow: 0 10px 30px rgba(16,185,129,0.35);
+  }
+  .mm-center .sub { font-size: 11px; font-weight: 600; opacity: 0.8; margin-top: 4px; }
+  .mm-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  }
+  @media (min-width: 600px) { .mm-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 900px) { .mm-grid { grid-template-columns: repeat(4, 1fr); } }
+  .mm-node {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 14px; cursor: pointer; transition: all 0.2s;
+    text-align: center; position: relative; color: var(--text);
+  }
+  [data-theme="light"] .mm-node { background: #fff; }
+  .mm-node:hover { transform: translateY(-3px) scale(1.02); border-color: var(--accent); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
+  .mm-node.active { background: linear-gradient(135deg, rgba(16,185,129,0.25), rgba(6,182,212,0.15)); border-color: var(--accent); }
+  .mm-node .mm-icon { font-size: 22px; margin-bottom: 6px; }
+  .mm-node .mm-name { font-size: 13px; font-weight: 700; line-height: 1.3; }
+  .mm-node .mm-count { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .mm-node .mm-prog {
+    position: absolute; top: 6px; right: 8px;
+    font-size: 10px; font-weight: 700;
+  }
+  .mm-node .mm-prog.full { color: var(--accent); }
+  .mm-detail {
+    margin-top: 18px; background: var(--bg-elev-2);
+    border: 1px solid var(--card-border); border-radius: 14px; padding: 16px;
+    animation: slideIn 0.3s;
+  }
+  [data-theme="light"] .mm-detail { background: #f8fafc; }
+  .mm-detail h3 { font-size: 16px; margin-bottom: 4px; }
+  .mm-detail .mm-detail-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; }
+  .mm-detail .mm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .mm-q-line {
+    padding: 10px 12px; background: var(--card); border-radius: 8px;
+    margin-bottom: 6px; font-size: 13px; line-height: 1.4;
+    display: flex; align-items: flex-start; gap: 10px;
+  }
+  [data-theme="light"] .mm-q-line { background: #fff; }
+  .mm-q-line .dot {
+    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px;
+    background: var(--card-border);
+  }
+  .mm-q-line .dot.right { background: var(--accent); }
+  .mm-q-line .dot.wrong { background: var(--danger); }
+
+  /* ===== Mini quizzes ===== */
+  .mq-grid {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  }
+  @media (min-width: 600px) { .mq-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 900px) { .mq-grid { grid-template-columns: repeat(4, 1fr); } }
+  .mq-card {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    border-radius: 14px; padding: 14px; cursor: pointer; transition: all 0.18s;
+    position: relative; color: var(--text); min-height: 110px;
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  [data-theme="light"] .mq-card { background: #fff; }
+  .mq-card:hover { transform: translateY(-2px); border-color: var(--accent); }
+  .mq-card.passed { background: linear-gradient(135deg, rgba(16,185,129,0.15), rgba(6,182,212,0.08)); border-color: var(--accent); }
+  .mq-card.failed { border-color: rgba(239,68,68,0.4); }
+  .mq-num {
+    font-size: 11px; font-weight: 700; color: var(--text-dim);
+    text-transform: uppercase; letter-spacing: 0.5px;
+  }
+  .mq-title { font-size: 15px; font-weight: 800; line-height: 1.2; }
+  .mq-range { font-size: 11px; color: var(--text-dim); }
+  .mq-score {
+    margin-top: auto; font-size: 13px; font-weight: 700;
+    display: flex; align-items: center; gap: 6px;
+  }
+  .mq-score .badge {
+    padding: 2px 8px; border-radius: 999px; font-size: 11px;
+    background: var(--card-border); color: var(--text-dim);
+  }
+  .mq-score .badge.pass { background: var(--accent); color: #042f2e; }
+  .mq-score .badge.fail { background: rgba(239,68,68,0.2); color: var(--danger); }
+  .mq-star { position: absolute; top: 10px; right: 12px; font-size: 16px; }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <linearGradient id="ringGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#10b981"/>
+      <stop offset="100%" stop-color="#06b6d4"/>
+    </linearGradient>
+  </defs>
+</svg>
+
+<header class="topbar">
+  <div class="topbar-inner">
+    <div class="brand">
+      <div class="logo">🚗</div>
+      <div>
+        <div>NJ Driver Test Pro</div>
+        <div class="brand-sub">222 questions · Practice for May 28</div>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">🌙</button>
+      <button class="icon-btn" onclick="confirmReset()" title="Reset progress">↻</button>
+    </div>
+  </div>
+</header>
+
+<main class="container">
+
+  <!-- =================== HOME =================== -->
+  <section id="screen-home" class="screen">
+    <div class="grid-2" style="margin-bottom: 16px;">
+
+      <!-- Countdown -->
+      <div class="countdown-card">
+        <div class="countdown-label">📅 Exam Day Countdown</div>
+        <div class="countdown-date" id="exam-date-label">May 28, 2026</div>
+        <div class="countdown-blocks">
+          <div class="cd-block"><div class="v" id="cd-days">--</div><div class="l">Days</div></div>
+          <div class="cd-block"><div class="v" id="cd-hrs">--</div><div class="l">Hours</div></div>
+          <div class="cd-block"><div class="v" id="cd-mins">--</div><div class="l">Mins</div></div>
+          <div class="cd-block"><div class="v" id="cd-secs">--</div><div class="l">Secs</div></div>
+        </div>
+      </div>
+
+      <!-- Progress -->
+      <div class="card">
+        <h2>📊 Your Progress</h2>
+        <div class="progress-row">
+          <div class="ring-wrap">
+            <svg><circle class="ring-track" cx="46" cy="46" r="40"></circle><circle id="ring-fill" class="ring-fill" cx="46" cy="46" r="40"></circle></svg>
+            <div class="ring-label" id="ring-pct">0%</div>
+          </div>
+          <div class="progress-info">
+            <div class="title" id="prog-count">0 / 200 answered</div>
+            <div class="subtitle" id="prog-sub">Get started — pick a mode below</div>
+            <div class="bar"><i id="prog-bar" style="width:0%"></i></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats" style="margin-bottom: 18px;">
+      <div class="stat g"><div class="v" id="st-mastered">0</div><div class="l">✅ Mastered</div></div>
+      <div class="stat r"><div class="v" id="st-review">0</div><div class="l">📚 Need Review</div></div>
+      <div class="stat b"><div class="v" id="st-flagged">0</div><div class="l">🚩 Flagged</div></div>
+      <div class="stat w"><div class="v" id="st-best">—</div><div class="l">🏆 Best Exam</div></div>
+    </div>
+
+    <!-- Modes -->
+    <div class="card" style="margin-bottom: 16px;">
+      <h2>🎯 Practice Modes</h2>
+      <div class="modes">
+        <button class="mode-btn primary" onclick="startMode('study')">
+          <span class="icon">📖</span>
+          <span class="name">Study Mode</span>
+          <span class="desc">Walk through all 222 with explanations</span>
+        </button>
+        <button class="mode-btn" onclick="startMode('exam')">
+          <span class="icon">📝</span>
+          <span class="name">Mock Exam</span>
+          <span class="desc">50 random Qs · 20 min · Pass: 80%</span>
+        </button>
+        <button class="mode-btn" onclick="startMode('review')">
+          <span class="icon">🔁</span>
+          <span class="name">Review Wrong</span>
+          <span class="desc"><span id="mode-review-count">0</span> questions to fix</span>
+        </button>
+        <button class="mode-btn" onclick="startMode('flagged')">
+          <span class="icon">🚩</span>
+          <span class="name">Flagged</span>
+          <span class="desc"><span id="mode-flag-count">0</span> bookmarked</span>
+        </button>
+        <button class="mode-btn" onclick="startMode('mastered')">
+          <span class="icon">✅</span>
+          <span class="name">Mastered Quiz</span>
+          <span class="desc">Re-test what you got right</span>
+        </button>
+        <button class="mode-btn" onclick="startMode('shuffle')">
+          <span class="icon">🔀</span>
+          <span class="name">Shuffle All</span>
+          <span class="desc">Random order, all 222</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Study Tools -->
+    <div class="card" style="margin-bottom: 16px;">
+      <h2>✨ Study Tools</h2>
+      <div class="tools-row">
+        <button class="tool-btn t1" onclick="openFlash()">
+          <div class="ic-box">🃏</div>
+          <div>
+            <div class="t-name">Flashcards</div>
+            <div class="t-desc">Tap to flip. Rate as known or to study.</div>
+          </div>
+        </button>
+        <button class="tool-btn t2" onclick="openMindMap()">
+          <div class="ic-box">🗺️</div>
+          <div>
+            <div class="t-name">Mind Map</div>
+            <div class="t-desc">Explore topics visually by category.</div>
+          </div>
+        </button>
+        <button class="tool-btn t3" onclick="openMiniQuizzes()">
+          <div class="ic-box">🎯</div>
+          <div>
+            <div class="t-name">Mini Quizzes</div>
+            <div class="t-desc">22 bite-sized quizzes · 10 Q each.</div>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- Categories -->
+    <div class="card" style="margin-bottom: 16px;">
+      <h2>📚 By Category</h2>
+      <div class="muted" style="margin-bottom: 10px;">Focus your practice on a specific topic.</div>
+      <div class="chips" id="category-chips"></div>
+    </div>
+
+    <!-- Search -->
+    <div class="card">
+      <h2>🔍 Search Questions</h2>
+      <input class="search-input" id="search-input" placeholder="Search the question bank (e.g. 'BAC', 'school bus')…">
+      <div id="search-results" style="margin-top: 12px;"></div>
+    </div>
+  </section>
+
+  <!-- =================== QUIZ =================== -->
+  <section id="screen-quiz" class="screen quiz-screen">
+    <div class="card">
+      <div class="quiz-header">
+        <span class="quiz-meta">Q <strong id="q-idx">1</strong> / <strong id="q-total">50</strong></span>
+        <span class="quiz-tag cat" id="q-cat">—</span>
+        <span class="quiz-tag" id="q-mode">Study</span>
+        <span class="quiz-tag timer hidden" id="q-timer">20:00</span>
+        <button class="flag-btn" id="flag-btn" onclick="toggleFlag()" title="Flag">🚩</button>
+      </div>
+      <div class="top-question-bar">
+        <div class="bar"><i id="q-bar" style="width:0%"></i></div>
+      </div>
+      <div class="question-text" id="q-text"></div>
+      <div class="options" id="q-options"></div>
+      <div id="q-explanation"></div>
+      <div class="q-controls">
+        <button class="btn btn-ghost" id="prev-btn" onclick="prevQuestion()">← Previous</button>
+        <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">Next →</button>
+      </div>
+      <div class="kbd-hint">Shortcuts: <kbd>1</kbd>–<kbd>4</kbd> answer · <kbd>←</kbd> <kbd>→</kbd> navigate · <kbd>F</kbd> flag</div>
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="exitQuiz()">⏏ Exit to Home</button>
+  </section>
+
+  <!-- =================== RESULT =================== -->
+  <section id="screen-result" class="screen quiz-screen">
+    <div class="card">
+      <div class="result-hero">
+        <div class="result-icon" id="res-icon">🏆</div>
+        <div class="result-title" id="res-title">Done!</div>
+        <div class="result-sub" id="res-sub">Great work.</div>
+        <div class="score-big" id="res-score">100%</div>
+      </div>
+      <div class="stats">
+        <div class="stat g"><div class="v" id="res-correct">0</div><div class="l">Correct</div></div>
+        <div class="stat r"><div class="v" id="res-wrong">0</div><div class="l">Wrong</div></div>
+        <div class="stat b"><div class="v" id="res-total">0</div><div class="l">Total</div></div>
+        <div class="stat w"><div class="v" id="res-time">—</div><div class="l">Time</div></div>
+      </div>
+      <div class="q-controls" style="margin-top: 18px;">
+        <button class="btn btn-ghost" onclick="goHome()">🏠 Home</button>
+        <button class="btn btn-primary" id="res-retry" onclick="retryWrong()">🔁 Review Wrong</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =================== FLASHCARDS =================== -->
+  <section id="screen-flash" class="screen quiz-screen">
+    <div class="card">
+      <h2>🃏 Flashcards</h2>
+      <div class="muted" style="margin-bottom: 10px;">Pick a deck, then tap the card to flip.</div>
+      <div class="deck-chips" id="deck-chips"></div>
+      <div class="flash-wrap">
+        <div class="flash-card" id="flash-card" onclick="flipFlash()">
+          <div class="flash-face front">
+            <div class="flash-cat-tag" id="flash-cat">—</div>
+            <div class="flash-q" id="flash-q">Loading…</div>
+            <div class="flash-flip-hint">Tap card to flip ↻</div>
+          </div>
+          <div class="flash-face back">
+            <div class="flash-answer-label">✓ Correct Answer</div>
+            <div class="flash-answer" id="flash-ans">—</div>
+            <div class="flash-exp" id="flash-exp">—</div>
+            <div class="flash-flip-hint">Tap to flip back ↺</div>
+          </div>
+        </div>
+      </div>
+      <div class="flash-controls">
+        <button class="btn btn-ghost" id="flash-prev" onclick="flashPrev()">← Prev</button>
+        <button class="btn btn-ghost" onclick="flashShuffle()">🔀 Shuffle</button>
+        <button class="btn btn-primary" id="flash-next" onclick="flashNext()">Next →</button>
+      </div>
+      <div class="flash-rate">
+        <button class="rate-btn know" onclick="flashRate(true)">✓ I know this</button>
+        <button class="rate-btn study" onclick="flashRate(false)">📚 Study more</button>
+      </div>
+      <div class="flash-counter" id="flash-counter">—</div>
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="goHome()">⏏ Back to Home</button>
+  </section>
+
+  <!-- =================== MIND MAP =================== -->
+  <section id="screen-mindmap" class="screen quiz-screen">
+    <div class="card">
+      <h2>🗺️ Mind Map — NJ Knowledge</h2>
+      <div class="muted" style="margin-bottom: 16px;">Tap any topic to see its questions and practice.</div>
+      <div class="mm-wrap">
+        <div class="mm-center">
+          🚗 NJ Driver Test
+          <div class="sub">222 questions · <span id="mm-cat-count">0</span> topics</div>
+        </div>
+        <div class="mm-grid" id="mm-grid"></div>
+        <div id="mm-detail"></div>
+      </div>
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="goHome()">⏏ Back to Home</button>
+  </section>
+
+  <!-- =================== MINI QUIZZES =================== -->
+  <section id="screen-miniquiz" class="screen quiz-screen">
+    <div class="card">
+      <h2>🎯 Mini Quizzes</h2>
+      <div class="muted" style="margin-bottom: 14px;">22 quick quizzes · 10 questions each · pass at 80%.</div>
+      <div class="stats" style="margin-bottom: 14px;">
+        <div class="stat g"><div class="v" id="mq-passed">0</div><div class="l">Passed</div></div>
+        <div class="stat b"><div class="v" id="mq-attempted">0</div><div class="l">Attempted</div></div>
+        <div class="stat w"><div class="v" id="mq-remaining">22</div><div class="l">To Go</div></div>
+        <div class="stat"><div class="v" id="mq-avg">—</div><div class="l">Avg Score</div></div>
+      </div>
+      <div class="mq-grid" id="mq-grid"></div>
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="goHome()">⏏ Back to Home</button>
+  </section>
+
+  <!-- =================== LISTS =================== -->
+  <section id="screen-list" class="screen quiz-screen">
+    <div class="card">
+      <h2 id="list-title">Mastered</h2>
+      <div class="muted" id="list-sub" style="margin-bottom: 14px;">—</div>
+      <div id="list-body"></div>
+      <button class="btn btn-primary btn-block" id="list-quiz-btn" style="margin-top:14px;" onclick="quizListed()">🎯 Quiz These</button>
+    </div>
+  </section>
+
+</main>
+
+<!-- Bottom nav -->
+<nav class="bottom-nav">
+  <div class="nav-tab active" data-tab="home" onclick="navTab('home')"><div class="ic">🏠</div><div>Home</div></div>
+  <div class="nav-tab" data-tab="mastered" onclick="navTab('mastered')"><div class="ic">✅</div><div>Mastered</div></div>
+  <div class="nav-tab" data-tab="review" onclick="navTab('review')"><div class="ic">📚</div><div>Review</div></div>
+  <div class="nav-tab" data-tab="flagged" onclick="navTab('flagged')"><div class="ic">🚩</div><div>Flagged</div></div>
+</nav>
+
+<!-- Credit -->
+<div class="credit">
+  <img src="Picture of Sheikh Md Faysal.jpeg" class="photo" alt="">
+  <div class="name">Sheikh Md Faysal</div>
+  <div>Built by AmiSober · Good luck on May 28! 🍀</div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+/* ===================== DATA ===================== */
+const EXAM_DATE = new Date('2026-05-28T08:00:00');
+
+const QUESTIONS = [
+{id:1,e:1,c:"Intersections",q:"When 2 roads intersect and there are no signs or signals, it is a good practice to:",o:["Blow your horn as a warning","Be ready to stop if necessary","Pull to the right hand lane and stop","Always yield to traffic on the left"],a:1},
+{id:2,e:1,c:"Parking",q:"You may not park within how many feet of a fire hydrant?",o:["10 feet","50 feet","25 feet","20 feet"],a:0},
+{id:3,e:1,c:"Turning",q:"When making a left turn from a two-way road onto a 4 lane highway, the proper way to turn is:",o:["Approach close to the centerline","Make the turn before reaching center of intersection","Turn into the left lane going in your direction","All of the above"],a:3},
+{id:4,e:1,c:"Intersections",q:"When approaching an uncontrolled intersection you should:",o:["Always come to a full stop","Slow down and look straight ahead","Speed up to clear intersection quickly","Reduce speed and be ready to stop"],a:3},
+{id:5,e:1,c:"Lights",q:"Dim your lights to low beam when:",o:["A car is approaching or you are behind another car","Parking on an unlit highway","Entering a curve","Driving on dark roads"],a:0},
+{id:6,e:1,c:"School Buses",q:"On a two-lane road, not near a school, when a school bus has stopped with red lights flashing:",o:["You must stop","You may pass from either direction","You may pass at 10 m.p.h. or less","You may pass with caution"],a:0},
+{id:7,e:1,c:"Safety",q:"In a crash or sudden stop, seat belts may:",o:["Keep you from being thrown from the car","Keep you from hitting the windshield","Keep you from sliding off the seat","All of the above"],a:3},
+{id:8,e:1,c:"Alcohol",q:"Driving under the influence of intoxicating beverages means:",o:["Your senses or judgment are impaired by alcohol","Drinking while driving","The driver shows obvious signs of being drunk","Driving even after one drink"],a:0},
+{id:9,e:1,c:"Alcohol",q:"The greatest number of people arrested for drunk driving have been drinking:",o:["Beer","Whiskey","Wine","Mixed drinks"],a:0},
+{id:10,e:1,c:"Trucks",q:"To safely share the road with large trucks and buses, you must know:",o:["Their impact on the environment","The horsepower of your vehicle","Limitations regarding visibility, stopping distances and maneuverability","The history of the trucking industry"],a:2},
+{id:11,e:1,c:"Accident Prevention",q:"The standard accident prevention formula includes:",o:["Be alert","Be prepared","Act in time","All of the above"],a:3},
+{id:12,e:1,c:"Passing",q:"If a vehicle is passing you, you should:",o:["Slow down to make it easier for the pass","Flash lights and sound horn to warn","Continue at same speed and signal oncoming traffic","Speed up so he won't complete the pass"],a:0},
+{id:13,e:1,c:"Trucks",q:"If a large truck is stopped at a traffic light, you should:",o:["Stop as close to the rear as possible","Go around on the right","Blow your horn","Stop with enough distance to avoid blind spots and see the driver's mirror"],a:3},
+{id:14,e:1,c:"GDL",q:"If under 21 and driving with 0.01% BAC, you face:",o:["30-90 day license suspension","15-30 days community service","Intoxicated driver resource center participation","All of the above"],a:3},
+{id:15,e:1,c:"Vehicle Equipment",q:"In NJ, studded snow tires can be legally used between:",o:["April 1st and December 15th","September 30th and May 30th","November 15th and April 1st","October 15th and March 15th"],a:2},
+{id:16,e:1,c:"Alcohol",q:"The best way to reduce alcohol-related accident risk is to:",o:["Reduce your drinking","Have a meal before drinking","Not drive at all after drinking","Know your own limits"],a:2},
+{id:17,e:1,c:"Hand Signals",q:"A hand signal with hand and arm upward means:",o:["U-Turn","Slow-Stop","Left-Turn","Right-Turn"],a:3},
+{id:18,e:1,c:"Curves",q:"The best way to take a curve is:",o:["Slow down before entering","Speed up while in the curve","Lean in the direction of the curve","Slow down after entering"],a:0},
+{id:19,e:1,c:"GDL",q:"Who is required by GDL law to wear a seat belt?",o:["The driver and all passengers","The driver and front seat passenger","The driver and supervising driver","The driver only"],a:0},
+{id:20,e:1,c:"Weather",q:"Road surfaces are most slippery:",o:["During very hot, humid weather","During the first few minutes of rainfall","After a very heavy rainfall","During very cold, dry weather"],a:1},
+{id:21,e:1,c:"Intersections",q:"You should always yield to:",o:["Emergency vehicles","Pedestrians","Other vehicles already in the intersection","All of the above"],a:3},
+{id:22,e:1,c:"License",q:"Altering a driver's license may result in:",o:["A fine of up to $1,000","Up to 6 months imprisonment","Loss of driving privilege","All of the above"],a:3},
+{id:23,e:1,c:"Alcohol",q:"Which drink has the highest alcohol content?",o:["5 oz table wine","1½ oz whiskey","12 oz beer","All are about equal"],a:3},
+{id:24,e:1,c:"Trucks",q:"In adverse weather, a truck's stopping distance increases by:",o:["100% more","50% more","25% more","70% more"],a:2},
+{id:25,e:1,c:"Speed Limits",q:"NJ speed limit in a business/residential area (unless posted) is:",o:["30 m.p.h.","25 m.p.h.","20 m.p.h.","35 m.p.h."],a:1},
+{id:26,e:1,c:"Curves",q:"To regain control in a skid, you should:",o:["Keep a tight grip on the wheel","Turn in the same direction the back is skidding","Turn in the opposite direction","Make a fast turn and lock brakes"],a:1},
+{id:27,e:1,c:"License",q:"You can't take a road test with obstructions between driver and examiner because:",o:["Examiner cannot reach the brakes","Obstruction is illegal","Console takes up too much space","Examiner cannot observe your feet"],a:0},
+{id:28,e:1,c:"Cell Phone",q:"NJ motorists may use hand-held phones while driving only for:",o:["Fire","Traffic accidents","Medical emergency","All of the above"],a:3},
+{id:29,e:1,c:"Signs",q:"Traffic light colors from top to bottom:",o:["Red, yellow, green","Red, green, yellow","Green, yellow, green","Yellow, green, red"],a:0},
+{id:30,e:1,c:"Lights",q:"High beam lights are used for:",o:["City streets without lamps","Signaling emergencies","Foggy weather","Open country driving"],a:3},
+{id:31,e:1,c:"GDL",q:"Passengers allowed with a GDL Special Learners Permit holder:",o:["0","Shared residence passengers plus 1 additional","2","None of the above"],a:1},
+{id:32,e:1,c:"GDL",q:"Provisional License holder (under 21) may have how many non-household members?",o:["3 or more","2","1","0"],a:2},
+{id:33,e:1,c:"Parking",q:"You cannot park within how many feet of a crosswalk?",o:["25 feet","10 feet","20 feet","50 feet"],a:0},
+{id:34,e:1,c:"GDL",q:"GDL Student Learner's Permit holder needs what for a Provisional License:",o:["Pass road test","Attain 17 years of age","6 month minimum supervised driving","A, B and C"],a:3},
+{id:35,e:1,c:"Railroad",q:"At a railroad crossing with flashing lights you must:",o:["Stop at the crossing","Slow down and look both ways","Slow down, blow horn, proceed with caution","All of the above"],a:0},
+{id:36,e:1,c:"Turning",q:"When making a left turn from a two-way road, get close to the:",o:["Line nearest to the center","Left lane nearest to left curb","Right lane, furthest from center","Right lane, nearest to right curb"],a:0},
+{id:37,e:1,c:"GDL",q:"Provisional License holders cannot use while driving:",o:["Hand held electronic devices","Hand held video game","Cell phones","All of the above"],a:3},
+{id:38,e:1,c:"GDL",q:"Fine for violating GDL conditions:",o:["No fine","$500","$100","$250"],a:2},
+{id:39,e:1,c:"Hand Signals",q:"Hand signal with hand and arm downward means:",o:["Right-turn","U-turn","Left-turn","Slow or stop"],a:3},
+{id:40,e:1,c:"Alcohol",q:"BAC rising above legal limits depends on:",o:["Amount you drink","Your weight","Time you take to drink","All of the above"],a:3},
+{id:41,e:1,c:"Turning",q:"NJ law permits right turn on red after:",o:["Making a full stop and checking traffic","Blowing your horn","Slowing down to check traffic","Checking traffic to your right"],a:0},
+{id:42,e:1,c:"Turning",q:"NJ requires you to keep right except:",o:["When impractical to travel on that side","When passing","When on a one-way street","All of the above"],a:3},
+{id:43,e:1,c:"Insurance",q:"Which convictions result in an Insurance Surcharge:",o:["DUI","DUI and Refusal to Take Breathalyzer","Refusal to Take Breathalyzer","All of the above"],a:3},
+{id:44,e:1,c:"Curves",q:"If you go into a skid you should:",o:["Straighten your wheels","Make a fast turn","Apply your brakes","Take your foot off the gas pedal"],a:3},
+{id:45,e:1,c:"Trucks",q:"When sharing road with large trucks or buses:",o:["Give more roadway for wide turns","Leave more space when stopping behind","Maintain consistent speed when passing","All of the above"],a:3},
+{id:46,e:1,c:"Alcohol",q:"3rd DUI conviction results in:",o:["Interlock device OR suspension of registrations","Interlock device AND suspension of registrations","Suspension of driving privilege","A and C"],a:2},
+{id:47,e:1,c:"Lights",q:"Before turning, signal at least:",o:["500 feet in advance","100 feet in advance","100 yards in advance","1 block in advance"],a:1},
+{id:48,e:1,c:"GDL",q:"GDL Examination Permit (21+) requires supervised driving for:",o:["Minimum 3 months","No supervision required","Minimum 9 months","Minimum 6 months"],a:0},
+{id:49,e:1,c:"Safe Driving",q:"If angry or excited while driving, you should:",o:["Give yourself time to cool off","Blow your horn to warn others","Drive with your radio on","None of the above"],a:0},
+{id:50,e:1,c:"GDL",q:"GDL Special Learner's permit holder must not drive between:",o:["12:01 AM and 5:00 AM","11:01 PM and 5:00 AM","11:01 PM and 6:00 AM","No restrictions apply"],a:1},
+{id:51,e:2,c:"Signs",q:"A triangular shaped sign is a:",o:["Yield sign","Warning sign","Railroad sign","Stop sign"],a:0},
+{id:52,e:2,c:"GDL",q:"A student permit holder must have while driving:",o:["Adult supervising driver in front seat","Their student permit","Registration and insurance ID card","All of the above"],a:3},
+{id:53,e:2,c:"Cell Phone",q:"NJ motorists may use hand-held phones while driving only for:",o:["Fire","Traffic accidents","Medical emergency","All of the above"],a:3},
+{id:54,e:2,c:"Intersections",q:"At an uncontrolled intersection you should:",o:["Speed up to clear quickly","Slow down and look straight ahead","Reduce speed and be ready to stop","Always come to a full stop"],a:2},
+{id:55,e:2,c:"Road Markings",q:"Two centerlines (1 solid, 1 broken) means:",o:["Passing permitted only on broken line side","Passing permitted on either side","Passing permitted on both sides when clear","Passing not permitted on either side"],a:0},
+{id:56,e:2,c:"Weather",q:"Road surfaces are most slippery:",o:["During very hot weather","During very cold, dry weather","After a very heavy rainfall","During the first few minutes of rainfall"],a:3},
+{id:57,e:2,c:"Points",q:"NJ allows up to 3 points subtracted if no moving violation for:",o:["2 years from last violation","6 months from last violation","1 year from last violation","18 months from last violation"],a:2},
+{id:58,e:2,c:"Trucks",q:"If a truck driver can't see you in rearview mirrors, you are:",o:["In the truck's no-zone or blind spot","Driving too slowly","Uninteresting to him","Driving a compact car"],a:0},
+{id:59,e:2,c:"Road Markings",q:"A solid white line across an intersection means:",o:["No parking zone","Bus stop","No passing","Stop behind the line for traffic sign or light"],a:3},
+{id:60,e:2,c:"Curves",q:"The best way to take a curve is:",o:["Speed up while in the curve","Lean in the direction","Slow down before entering","Slow down after entering"],a:2},
+{id:61,e:2,c:"Signs",q:"At a steady yellow traffic signal, you should:",o:["Stop immediately","Slow down and continue with caution","Stop before entering if you safely can","Speed up before it turns red"],a:2},
+{id:62,e:2,c:"Alcohol",q:"A 12-oz beer has as much alcohol as:",o:["A bottle of rum","2 martinis","1½ oz of 86 proof whiskey","A pint of brandy"],a:2},
+{id:63,e:2,c:"Railroad",q:"At a railroad crossing with flashing lights you must:",o:["Stop at the crossing","Slow down and look both ways","Slow down, blow horn, proceed with caution","All of the above"],a:0},
+{id:64,e:2,c:"Trucks",q:"To safely share road with trucks, you must know:",o:["Horsepower of your vehicle","History of trucking industry","Limitations of visibility, stopping distances, maneuverability","Impact on the environment"],a:2},
+{id:65,e:2,c:"License",q:"Getting a license illegally may result in:",o:["6 months imprisonment","$200-$500 fine and/or 30-90 days imprisonment","A court trial","$25-$100 fine"],a:1},
+{id:66,e:2,c:"Trucks",q:"In adverse weather, a truck's stopping increase can be:",o:["70% more","25% more","50% more","100% more"],a:1},
+{id:67,e:2,c:"GDL",q:"If under 21, you may be under the influence if BAC is:",o:["More than .10% but less than .15%","More than .05% but less than .10%","More than .01% but less than .05%","All of the above"],a:3},
+{id:68,e:2,c:"GDL",q:"A GDL Permit supervising driver must:",o:["Be 21 years or older","Be NJ licensed","Be licensed for minimum 3 years","A, B, and C"],a:3},
+{id:69,e:2,c:"GDL",q:"GDL permit holder (21+) driving hour restrictions:",o:["6:01AM to midnight","No restrictions apply","5:01AM to midnight","5:01AM to 11:00PM"],a:1},
+{id:70,e:2,c:"GDL",q:"GDL Special Learner's permit holder must not drive between:",o:["11:01PM and 6:00AM","11:01PM and 5:00AM","No restrictions apply","12:01AM and 5:00AM"],a:1},
+{id:71,e:2,c:"Safety",q:"A child must be in a restraint device if:",o:["Under 5 and in front seat","Under 18 months and in front seat","Under 18 months and in back seat","All of the above"],a:3},
+{id:72,e:2,c:"Parking",q:"You may not park within how many feet of a fire hydrant?",o:["50 feet","25 feet","20 feet","10 feet"],a:3},
+{id:73,e:2,c:"GDL",q:"Passengers allowed with GDL Special Learners Permit:",o:["0","Shared residence passengers plus 1 additional","2","None of the above"],a:1},
+{id:74,e:2,c:"Safe Driving",q:"In city driving, a good habit is to:",o:["Use the 2 second rule","Reduce speed and use horn","Look 12 seconds ahead","Practice good judgment"],a:2},
+{id:75,e:2,c:"Following Distance",q:"The '2 second rule' helps you:",o:["Drive within the speed limit","Bring car out of a skid","Time traffic lights","Keep a safe following distance"],a:3},
+{id:76,e:2,c:"Alcohol",q:"At BAC slightly above .05%, accident risk is:",o:["No different","Triple","Double","None of the above"],a:2},
+{id:77,e:2,c:"Trucks",q:"If a truck is stopped at a light, you should:",o:["Blow your horn","Go around on the right","Stop with enough distance to avoid blind spots","Stop as close to the rear as possible"],a:2},
+{id:78,e:2,c:"Turning",q:"When legal to turn right on red, you must first:",o:["Slow down and check traffic","Make a full stop and check traffic","Blow your horn","Check traffic to right"],a:1},
+{id:79,e:2,c:"Alcohol",q:"At .10% BAC, accident risk increases to:",o:["4 times","10 times","6 times","3 times"],a:2},
+{id:80,e:2,c:"Alcohol",q:"What can sober up a drinking person?",o:["Fresh air","Strong black coffee","Time","A cold shower"],a:2},
+{id:81,e:2,c:"Safe Driving",q:"The best way to 'talk' to other drivers is to:",o:["Be courteous and wave","Use your horn and lights","Roll down window and yell","All of the above"],a:1},
+{id:82,e:2,c:"License",q:"If you sell your car, license plates should be:",o:["Given to a friend","Kept as a souvenir","Turned into a MV inspection facility","Thrown away"],a:2},
+{id:83,e:2,c:"Safe Driving",q:"In city driving you should:",o:["Drive more slowly","Watch for pedestrians","Look at least 12 seconds ahead","All of the above"],a:3},
+{id:84,e:2,c:"GDL",q:"Provisional License holders can't use while driving:",o:["Hand held electronic devices","Hand held video game","Cell phones","All of the above"],a:3},
+{id:85,e:2,c:"GDL",q:"Provisional License holder (under 21) may drive unsupervised when:",o:["6 months supervised driving","Pass a road test","Pass road test after 6 months, excluding suspensions","Pass road test after 6 months supervised driving"],a:2},
+{id:86,e:2,c:"Intersections",q:"You should always yield to:",o:["Emergency vehicles","Pedestrians","Vehicles already in the intersection","All of the above"],a:3},
+{id:87,e:2,c:"Vehicle Equipment",q:"Studded snow tires legal in NJ between:",o:["September 30th and May 30th","October 15th and March 15th","April 1st and December 15th","November 15th and April 1st"],a:3},
+{id:88,e:2,c:"Parking",q:"Parking uphill with curb on right, wheels should be:",o:["Turned away from the curb","Turned straight ahead","Turned to the right","Turned toward the curb"],a:0},
+{id:89,e:2,c:"License",q:"Altering a license may result in:",o:["Fine up to $1000","Up to 6 months imprisonment","Loss of driving privilege","All of the above"],a:3},
+{id:90,e:2,c:"GDL",q:"GDL Exam Permit or Provisional (under 21) driving hours:",o:["5:01AM to 11:00PM","5:01 AM to midnight","6:01 AM to midnight","No restrictions"],a:1},
+{id:91,e:2,c:"Alcohol",q:"If someone gets drunk at your home and has an accident, you could:",o:["Be charged with a crime","Not be held responsible","Become involved in a lawsuit","None of the above"],a:2},
+{id:92,e:2,c:"GDL",q:"A provisional driver is provisional for:",o:["4 years","1 year","6 months","3 months"],a:1},
+{id:93,e:2,c:"Parking",q:"Parking downhill with curb on right, wheels should be:",o:["Turned away from curb","Turned straight ahead","Turned toward the curb","Turned to the left"],a:2},
+{id:94,e:2,c:"Parking",q:"You cannot park:",o:["In front of a fire hydrant","In a bus stop","In front of a driveway","All of the above"],a:3},
+{id:95,e:2,c:"Road Markings",q:"Double solid lines in center of 2-way road means:",o:["Traffic should not cross from either side","'Pass with care' road","A 1-way street","A divided highway"],a:0},
+{id:96,e:2,c:"Moped",q:"A person may operate a Moped with:",o:["A valid basic license","A valid motorcycle license","A valid moped license","Any of the above"],a:3},
+{id:97,e:2,c:"Safe Driving",q:"If angry or excited, you should:",o:["Give yourself time to cool off","Blow your horn to warn others","Drive with your radio on","None of the above"],a:0},
+{id:98,e:2,c:"Alcohol",q:"Best way to reduce alcohol-related accidents:",o:["Not drive at all after drinking","Know your own limits","Reduce your drinking","Have a meal before drinking"],a:0},
+{id:99,e:2,c:"Turning",q:"Left turn from two-way road onto 4-lane highway:",o:["Approach close to centerline","Turn before reaching center","Turn into the left lane going your direction","All of the above"],a:3},
+{id:100,e:2,c:"Curves",q:"If you go into a skid:",o:["Take your foot off the gas","Straighten your wheels","Apply your brakes","Make a fast turn"],a:0},
+{id:101,e:3,c:"Safety",q:"A child must be in a restraint device if:",o:["Under 5 and in front seat","Under 18 months and in front seat","Under 18 months and in back seat","All of the above"],a:3},
+{id:102,e:3,c:"Signs",q:"A Railroad Crossing Sign is:",o:["Black and Red (Triangle)","White and Blue (Square)","Black and Yellow (Circle)","Green and White (Diamond)"],a:2},
+{id:103,e:3,c:"Trucks",q:"When sharing road with trucks or buses, you should:",o:["Give more roadway for wide turns","Leave more space stopping behind","Maintain consistent speed when passing","All of the above"],a:3},
+{id:104,e:3,c:"Safe Driving",q:"If wheels drift onto dirt shoulder, to return to pavement you should:",o:["Drive to an acceleration lane","Drive along shoulder until matching traffic speed","Move slowly and wave traffic around","Slow down, turn back onto pavement slowly"],a:3},
+{id:105,e:3,c:"License",q:"At your Road Test, you must present:",o:["Valid vehicle registration","Valid examination permit","Valid insurance ID card","All of the above"],a:3},
+{id:106,e:3,c:"Signs",q:"A green light means:",o:["Be ready to stop","Slow down","Slow before intersection","Go when safe"],a:3},
+{id:107,e:3,c:"Emergency",q:"If you have a flat tire or blowout:",o:["Grip the wheel firmly","Let up on the gas pedal","Let car coast to a stop","All of the above"],a:3},
+{id:108,e:3,c:"Parking",q:"You may not park within how many feet of a fire hydrant?",o:["10 feet","50 feet","20 feet","25 feet"],a:0},
+{id:109,e:3,c:"Safe Driving",q:"If angry or excited, you should:",o:["Give yourself time to cool off","Blow your horn to warn others","Drive with your radio on","None of the above"],a:0},
+{id:110,e:3,c:"Curves",q:"When driving around a curve, your vehicle may tend to:",o:["Keep going straight","Slow down","Follow the curve","Speed up"],a:0},
+{id:111,e:3,c:"Road Markings",q:"Two centerlines (1 solid, 1 broken):",o:["Passing not permitted on either side","Passing only on the broken line side","Passing on either side","Passing on both sides when clear"],a:1},
+{id:112,e:3,c:"Railroad",q:"At a railroad crossing with flashing lights:",o:["Stop at the crossing","Slow down and look both ways","Slow down, blow horn, proceed with caution","All of the above"],a:0},
+{id:113,e:3,c:"Trucks",q:"In adverse weather, truck stopping increase can be:",o:["70% more","100% more","25% more","50% more"],a:2},
+{id:114,e:3,c:"Lights",q:"Dim your lights to low beam when:",o:["Driving on dark roads","Parking on unlit highway","Entering a curve","A car is approaching or you're behind another car"],a:3},
+{id:115,e:3,c:"License",q:"Address change must be reported to MVC within:",o:["1 week","6 weeks","2 months","2 weeks"],a:0},
+{id:116,e:3,c:"Safe Driving",q:"To avoid highway hypnosis:",o:["Look straight ahead to the side","Spend equal time looking at mirrors and front","Rest eyes by slowly blinking","Avoid looking at one thing for more than a few seconds"],a:3},
+{id:117,e:3,c:"Weather",q:"When hydroplaning, you should:",o:["Push brake pedal hard","Increase speed","Change lanes","Slow down"],a:3},
+{id:118,e:3,c:"Moped",q:"A person may operate a Moped with:",o:["A valid basic license","A valid motorcycle license","A valid moped license","Any of the above"],a:3},
+{id:119,e:3,c:"GDL",q:"GDL Special Learner's permit holder must not drive between:",o:["No restrictions","12:01 AM and 5:00 AM","11:01 PM and 5:00 AM","11:01 PM and 6:00 AM"],a:2},
+{id:120,e:3,c:"GDL",q:"Under 21, you may be under the influence if BAC is:",o:["More than .10% but less than .15%","More than .05% but less than .10%","More than .01% but less than .05%","All of the above"],a:3},
+{id:121,e:3,c:"Alcohol",q:"A 12-oz beer has as much alcohol as:",o:["A pint of brandy","2 martinis","1½ oz of 86 proof whiskey","A bottle of rum"],a:2},
+{id:122,e:3,c:"License",q:"Moving to NJ, vehicle must be inspected within:",o:["90 days after registering","2 months after registering","6 months after registering","14 days after registering"],a:3},
+{id:123,e:3,c:"Emergency Vehicles",q:"When you see/hear emergency vehicles with sirens and lights:",o:["Speed up and stay 100 feet ahead","Slow up and let them pass","Pull over to extreme right and stop","Follow and offer assistance"],a:2},
+{id:124,e:3,c:"Accident Prevention",q:"Standard accident prevention formula:",o:["Be alert","Be prepared","Act in time","All of the above"],a:3},
+{id:125,e:3,c:"GDL",q:"GDL Student Learner's Permit holder needs for Provisional License:",o:["Pass road test","Attain 17 years","6 month minimum supervised driving","A, B and C"],a:3},
+{id:126,e:3,c:"Speed Limits",q:"School zone speed limit (unless posted):",o:["25 m.p.h.","15 m.p.h.","10 m.p.h.","35 m.p.h."],a:0},
+{id:127,e:3,c:"GDL",q:"GDL Exam Permit (21+) supervised driving required:",o:["Minimum 6 months","Minimum 9 months","Minimum 3 months","No supervision required"],a:2},
+{id:128,e:3,c:"Alcohol",q:"If 21+, you may/may not be under influence if BAC is:",o:["More than .10% but less than .15%","More than .15% but less than .20%","More than .05% but less than .08%","All of the above"],a:2},
+{id:129,e:3,c:"Signs",q:"A yield sign shape is:",o:["Circle in square","Triangle","Eight-sided","Diamond"],a:1},
+{id:130,e:3,c:"GDL",q:"Provisional License holder (under 21) may drive unsupervised when:",o:["Pass road test after 6 months supervised","6 months supervised driving","Pass road test after 6 months, excluding suspensions","Pass a road test"],a:2},
+{id:131,e:3,c:"Lights",q:"Signals should be used:",o:["When changing lanes","When turning","When slowing down","All of the above"],a:3},
+{id:132,e:3,c:"GDL",q:"GDL Exam Permit/Provisional (under 21) driving hours:",o:["No restrictions","5:01AM to 11:00 PM","6:01 AM to midnight","5:01 AM to midnight"],a:3},
+{id:133,e:3,c:"School Buses",q:"On a two-lane road (not near school), school bus stopped with red lights flashing:",o:["You must stop","You may pass with caution","You may pass from either direction","You may pass at 10 mph or less"],a:0},
+{id:134,e:3,c:"Alcohol",q:"What sobers up a drinking person?",o:["A cold shower","Time","Strong black coffee","Fresh air"],a:1},
+{id:135,e:3,c:"GDL",q:"A GDL Permit supervising driver must:",o:["Be 21 or older","Be NJ licensed","Be licensed minimum 3 years","A, B, and C"],a:3},
+{id:136,e:3,c:"Trucks",q:"To safely share road with trucks, know:",o:["Limitations of visibility, stopping, maneuverability","Trucking industry history","Horsepower of your vehicle","Impact on environment"],a:0},
+{id:137,e:3,c:"Emergency",q:"If you have a tire blowout:",o:["Apply your brakes","Continue at regular speed until safe","Slow down gradually","Turn off the road quickly"],a:2},
+{id:138,e:3,c:"Turning",q:"NJ requires you to keep right except:",o:["When impractical to travel on that side","When passing","When on a one-way street","All of the above"],a:3},
+{id:139,e:3,c:"GDL",q:"GDL Special Learner's Permit holder eligible for basic license at:",o:["17, with passing road test","18","18, with completion of Provisional requirements","17, with one year supervised and road test"],a:2},
+{id:140,e:3,c:"Weather",q:"Provisional driver, daytime rain, must have:",o:["Wipers on","Headlights on","Both A & B","Defrosters only"],a:2},
+{id:141,e:3,c:"License",q:"Altering a license may result in:",o:["Fine up to $1,000","Up to 6 months imprisonment","Loss of driving privilege","All of the above"],a:3},
+{id:142,e:3,c:"Signs",q:"A diamond shaped sign is a:",o:["Yield sign","Stop sign","Warning sign","Railroad sign"],a:2},
+{id:143,e:3,c:"Alcohol",q:"At BAC slightly above .05%, accident risk is:",o:["No different","Triple","Double","None of the above"],a:2},
+{id:144,e:3,c:"Parking",q:"Parking downhill with curb on right, wheels should be:",o:["Turned to the left","Turned straight ahead","Turned toward the curb","Turned away from curb"],a:2},
+{id:145,e:3,c:"Highway",q:"A deceleration lane is:",o:["The passing lane","An extra lane at a highway exit","For slow drivers only","For fast drivers only"],a:1},
+{id:146,e:3,c:"Alcohol",q:"If someone gets drunk at your home and has accident:",o:["Be charged with a crime","Not be held responsible","Become involved in a lawsuit","None of the above"],a:2},
+{id:147,e:3,c:"GDL",q:"Provisional License holders can't use while driving:",o:["Hand held electronic devices","Hand held video game","Cell phones","All of the above"],a:3},
+{id:148,e:3,c:"Safe Driving",q:"Best way to 'talk' to other drivers:",o:["Be courteous and wave","Use your horn and lights","Roll down window and yell","All of the above"],a:1},
+{id:149,e:3,c:"Trucks",q:"If a truck is stopped at a light, you should:",o:["Go around on the right","Stop as close to rear as possible","Blow your horn","Stop with enough distance to avoid blind spots"],a:3},
+{id:150,e:3,c:"Alcohol",q:"Best way to reduce alcohol-related accidents:",o:["Not drive at all after drinking","Reduce drinking","Know your own limits","Have a meal before drinking"],a:0},
+{id:151,e:4,c:"Intersections",q:"You should always yield to:",o:["Emergency vehicles","Pedestrians","Vehicles already in the intersection","All of the above"],a:3},
+{id:152,e:4,c:"Signs",q:"An eight-sided sign means:",o:["Yield to other traffic","Stop","Slow down","Railroad crossing"],a:1},
+{id:153,e:4,c:"Speed Limits",q:"School zone speed limit (unless posted):",o:["25 m.p.h.","10 m.p.h.","15 m.p.h.","35 m.p.h."],a:0},
+{id:154,e:4,c:"Hand Signals",q:"Hand signal with hand and arm downward means:",o:["U-turn","Left-turn","Right-turn","Slow or stop"],a:3},
+{id:155,e:4,c:"Highway",q:"If you miss your exit on an expressway:",o:["Go on to the next exit","Slow down and stop","Turn around and go back","Pull off and back up the shoulder"],a:0},
+{id:156,e:4,c:"Curves",q:"When driving around a curve, your vehicle may tend to:",o:["Speed up","Follow the curve","Slow down","Keep going straight"],a:3},
+{id:157,e:4,c:"Trucks",q:"If a truck is stopped at a light, you should:",o:["Go around on the right","Blow your horn","Stop as close to the rear as possible","Stop with enough distance to avoid blind spots"],a:3},
+{id:158,e:4,c:"GDL",q:"GDL Exam Permit/Provisional (under 21) driving hours:",o:["5:01AM to 11:00PM","5:01 AM to midnight","No restrictions","6:01 AM to midnight"],a:1},
+{id:159,e:4,c:"Road Markings",q:"A solid white line at an intersection means:",o:["Stop behind the line for traffic sign or light","No parking zone","Bus stop","No passing"],a:0},
+{id:160,e:4,c:"Following Distance",q:"A space cushion gives you:",o:["Time to react","A clear view of the road","Decreased reaction time","None of the above"],a:0},
+{id:161,e:4,c:"Lights",q:"At night, be sure you can stop:",o:["Within 20 feet at all times","Within 20 feet at 30 mph","Within 20 feet at 40 mph","Within the distance you can see ahead"],a:3},
+{id:162,e:4,c:"Trucks",q:"To safely share road with trucks, know:",o:["Impact on environment","Trucking industry history","Limitations of visibility, stopping, maneuverability","Horsepower of your vehicle"],a:2},
+{id:163,e:4,c:"Cell Phone",q:"NJ motorists may use hand-held phones only for:",o:["Fire","Traffic accidents","Medical emergency","All of the above"],a:3},
+{id:164,e:4,c:"Trucks",q:"When passing a truck, remember:",o:["Name of owner on the side","Several no-zones (blind spots) where driver can't see you","The 'two-second' rule","All of the above"],a:1},
+{id:165,e:4,c:"Moped",q:"A Moped can be operated with:",o:["A valid basic license","A valid motorcycle license","A valid moped license","Any of the above"],a:3},
+{id:166,e:4,c:"Hand Signals",q:"Hand signal with hand and arm upward means:",o:["Left-Turn","Right-Turn","U-Turn","Slow-Stop"],a:1},
+{id:167,e:4,c:"Alcohol",q:"If someone gets drunk at your home and has accident:",o:["Be charged with a crime","Not be held responsible","Become involved in a lawsuit","None of the above"],a:2},
+{id:168,e:4,c:"Lights",q:"Before turning, signal at least:",o:["1 block in advance","100 feet in advance","500 feet in advance","100 yards in advance"],a:1},
+{id:169,e:4,c:"Points",q:"After license returned from suspension, probation is:",o:["Two years","One year","6 months","9 months"],a:1},
+{id:170,e:4,c:"Alcohol",q:"1½ oz of 86 proof whiskey equals:",o:["A 6-pack of beer","6 oz premium beer","A bottle of wine","12 ounces of beer"],a:3},
+{id:171,e:4,c:"Safety",q:"A child must be in a restraint device if:",o:["Under 5 and in front seat","Under 18 months and in front seat","Under 18 months and in back seat","All of the above"],a:3},
+{id:172,e:4,c:"Curves",q:"To regain control in a skid:",o:["Fast turn in skid direction and lock brakes","Turn opposite direction of back skidding","Turn same direction as back of car is skidding","Keep tight grip on wheel"],a:2},
+{id:173,e:4,c:"Alcohol",q:"Which drink has highest alcohol content?",o:["5 oz table wine","1½ oz whiskey","12 oz beer","All are about equal"],a:3},
+{id:174,e:4,c:"GDL",q:"Provisional driver is provisional for:",o:["1 year","3 months","4 years","6 months"],a:0},
+{id:175,e:4,c:"Alcohol",q:"You're legally under the influence at BAC of:",o:[".01%",".05%",".08%","None of the above"],a:2},
+{id:176,e:4,c:"GDL",q:"GDL law requires remedial training for:",o:["4+ points","2+ points","DUI conviction","A and C"],a:3},
+{id:177,e:4,c:"Alcohol",q:"Implied Consent Law means:",o:["Must have liability insurance","Sign agreement to give blood","Permission for another to move car","Automatically agree to breath test after DUI arrest"],a:3},
+{id:178,e:4,c:"Road Markings",q:"Two centerlines (1 solid, 1 broken):",o:["Passing on both sides when clear","Passing not permitted on either side","Passing only on the broken line side","Passing on either side"],a:2},
+{id:179,e:4,c:"Insurance",q:"Every NJ registered vehicle must be insured for:",o:["Theft","Fire damage","Liability","Collision"],a:2},
+{id:180,e:4,c:"Passing",q:"You may pass on the right when:",o:["Driver ahead is turning left and there's a proper lane","No traffic signals","Entering an intersection","Slow moving vehicle ahead"],a:0},
+{id:181,e:4,c:"GDL",q:"Provisional License (under 21) non-household members allowed:",o:["0","1","2","3 or more"],a:1},
+{id:182,e:4,c:"License",q:"At your Road Test, you must present:",o:["Valid registration","Valid examination permit","Valid insurance ID card","All of the above"],a:3},
+{id:183,e:4,c:"Alcohol",q:"After 2-4 drinks, alcohol impairs your:",o:["Reaction time","Coordination and balance","Judgment","All of the above"],a:3},
+{id:184,e:4,c:"License",q:"Address change must be reported within:",o:["1 week","6 weeks","2 months","2 weeks"],a:0},
+{id:185,e:4,c:"Following Distance",q:"Proper following distance is at least:",o:["3/4 of a second behind","1/2 of a second behind","2 seconds behind","1 second behind"],a:2},
+{id:186,e:4,c:"Insurance",q:"Insurance Surcharge convictions include:",o:["DUI","DUI and Breathalyzer Refusal","Breathalyzer Refusal","All of the above"],a:3},
+{id:187,e:4,c:"Parking",q:"Parking uphill with curb on right, wheels should be:",o:["Turned away from curb","Turned toward curb","Turned to the right","Turned straight ahead"],a:0},
+{id:188,e:4,c:"Weather",q:"Road surfaces are most slippery:",o:["After very heavy rainfall","During first few minutes of rainfall","During very cold, dry weather","During very hot weather"],a:1},
+{id:189,e:4,c:"GDL",q:"Under 21, you may be under influence if BAC is:",o:["More than .10% but less than .15%","More than .05% but less than .10%","More than .01% but less than .05%","All of the above"],a:3},
+{id:190,e:4,c:"Railroad",q:"At a railroad crossing with flashing lights:",o:["Stop at the crossing","Slow down and look both ways","Slow down, blow horn, proceed with caution","All of the above"],a:0},
+{id:191,e:4,c:"GDL",q:"GDL Student Learner's Permit needs for Provisional License:",o:["Pass road test","Attain 17 years","6 month minimum supervised driving","A, B and C"],a:3},
+{id:192,e:4,c:"Parking",q:"Can't park within how many feet of a crosswalk?",o:["50 feet","10 feet","25 feet","20 feet"],a:2},
+{id:193,e:4,c:"GDL",q:"Fine for violating GDL conditions:",o:["No fine","$100","$500","$250"],a:1},
+{id:194,e:4,c:"License",q:"Moving to NJ, vehicle inspected within:",o:["14 days after registering","90 days after registering","6 months after registering","2 months after registering"],a:0},
+{id:195,e:4,c:"Lights",q:"High beam lights are used for:",o:["Signaling emergencies","Open country driving","City streets without lamps","Foggy weather"],a:1},
+{id:196,e:4,c:"Curves",q:"If you go into a skid:",o:["Take foot off the gas","Make a fast turn","Straighten wheels","Apply brakes"],a:0},
+{id:197,e:4,c:"Alcohol",q:"3rd DUI conviction results in:",o:["Interlock device OR suspension of registrations","Interlock device AND suspension of registrations","Suspension of driving privilege","A and C"],a:2},
+{id:198,e:4,c:"GDL",q:"GDL Exam Permit (21+) supervised driving required:",o:["Minimum 3 months","Minimum 6 months","No supervision required","Minimum 9 months"],a:0},
+{id:199,e:4,c:"Trucks",q:"If a truck driver can't see you in mirrors, you're:",o:["Driving a compact car","Driving too slowly","Uninteresting to him","In the truck's no-zone or blind spot"],a:3},
+{id:200,e:4,c:"GDL",q:"If a student driver commits an offense, responsibility is with:",o:["Neither student nor instructor","Only the student","Only the instructor","Both student and instructor"],a:3},
+{id:201,e:5,c:"GDL",q:"At what age may an applicant obtain a Special Learner Permit and enroll in a behind-the-wheel training course conducted by a Secondary and/or Commercial Driving School?",o:["At the age of 20 before turning 21 years old","At the age of 14 before turning 15 years old","At the age of 16 before turning 17 years old","At the age of 15 and before turning 16 years old"],a:2},
+{id:202,e:5,c:"GDL",q:"A Special Learners Permit may be purchased by an approved instructor when the applicant:",o:["Is at least 16 yrs old and under 17 years old","Is enrolled in behind-the-wheel training course with a commercial driving school","Has a signed consent by a parent or guardian","All of the answers"],a:3},
+{id:203,e:5,c:"Alcohol",q:"If a motorist reaches a BAC of .15%, the risk of causing a motor vehicle accident is:",o:["Double","6x greater","None of the answers","25x greater"],a:3},
+{id:204,e:5,c:"Signs",q:"What color(s) sign are used to indicate sharing the road with pedestrians and bicyclists?",o:["Orange-red","Yellow-green","Orange","Yellow-orange"],a:1},
+{id:205,e:5,c:"Highway",q:"An acceleration lane is:",o:["The passing lane","The left lane on a two-lane highway","An extra lane at the highway exit","An extra lane at the highway entrance"],a:3},
+{id:206,e:5,c:"Speed Limits",q:"Violations committed in ______ are subjected to a double fine.",o:["A business district","A construction zone","A school zone","A residential area"],a:1},
+{id:207,e:5,c:"Safe Driving",q:"A motorist should be cautious in farm country or in open land because:",o:["There are no traffic lights or signals","The roads are more narrow and with bumps","Unexpected crossing of livestock and/or deer","None of the answers"],a:2},
+{id:208,e:5,c:"Railroad",q:"When approaching a railroad crossing with flashing lights, you must:",o:["Slow down and look both ways","Stop at least 15 ft from the crossing","All of the answers","Slow down, blow your horn before crossing"],a:1},
+{id:209,e:5,c:"License",q:"A lost or stolen driver license, permit or non-driver ID should be reported to:",o:["The police","The MVC agency","Your insurance company","The nearest Driver Testing Center"],a:0},
+{id:210,e:5,c:"Pedestrians",q:"Failure to stop for pedestrians in a crosswalk carries a fine up to:",o:["$500, up to 25 days in jail, 6 months suspension, 2 points and community service","$50, up to 30 days in jail, 3 month suspension and 2 points","$100, up to 20 days in jail, 6 month suspension","$1000, up to 10 days in jail, 4 points and 3 months suspension"],a:0},
+{id:211,e:5,c:"Following Distance",q:"The 3 second rule can be used at any speed to help you:",o:["Keep a safe following distance","Time traffic lights at intersections","Bring your car out of a skid","Drive within the speed limit"],a:0},
+{id:212,e:5,c:"GDL",q:"During the probationary two year period after receiving a special learner permit or examination permit, a driver must enroll in a Probationary Driver Program when:",o:["Convicted of 2 or more moving violations totaling 4 or more points","Convicted of 4 or more moving violations totaling 4 or more points","None of the answers","Convicted of 2 or more moving violations totaling 6 or more points"],a:0},
+{id:213,e:5,c:"Turning",q:"Under New Jersey law, motorists signaling a right turn must yield to which of the following individuals?",o:["Pedestrians","Bicyclists","All of the answers","Inline skaters and skateboarders"],a:2},
+{id:214,e:5,c:"Safe Driving",q:"In extreme cases an aggressive driver may:",o:["Stay at or under the speed limit","Make complete stops at traffic signal","All of the answers","Cause an accident"],a:3},
+{id:215,e:5,c:"GDL",q:"Any vehicle operated by a GDL driver under 21 must display:",o:["1 reflective orange decal on each license plate","1 reflective red decal on the front and rear license plate","1 reflective red decal on the front and rear window","2 reflective decals on each license plate"],a:1},
+{id:216,e:5,c:"Signs",q:"A flashing red traffic light means:",o:["Use caution when entering an intersection","Stop, wait for green","Slow, yield to traffic on the right","Stop, yield to traffic and pedestrians"],a:3},
+{id:217,e:5,c:"Points",q:"In addition to a possible fine, when operating a vehicle on public or private property to avoid a traffic signal or sign, you will receive:",o:["Jail time","4 point moving violation","2 point moving violation","6 point moving violation"],a:2},
+{id:218,e:5,c:"Emergency",q:"If your brakes suddenly give out, the thing you should try to do is:",o:["Drive onto the shoulder to reduce speed","Shift to a lower gear and pump the brakes several times","Turn off the ignition","Blow the horn and coast to a stop"],a:1},
+{id:219,e:5,c:"Following Distance",q:"How much braking distance will it take a vehicle to stop on a dry surface, when driving at a speed of 60 mph?",o:["20 feet","300 feet","55 feet","500 feet"],a:1},
+{id:220,e:5,c:"GDL",q:"Driving privileges will be postponed or suspended to any person 13 to 21 years of age if convicted of:",o:["Buying alcoholic beverages and/or driving under the influence","Graffiti","Setting false alarms","All of the answers"],a:3},
+{id:221,e:5,c:"Trucks",q:"If the driver of a large truck cannot see another motorist's vehicle in the rearview or side-view mirrors, where is your vehicle in relation to the large truck?",o:["No-zone","Both A and B","Blind spot","In front"],a:1},
+{id:222,e:5,c:"Vehicle Equipment",q:"Fines will be imposed to a motorist:",o:["All of the answers","Leaving the vehicle idling for more than 3 minutes","Who violates the 'move over law'","Failing to remove snow or ice from a vehicle"],a:0}
+];
+
+const EXPLANATIONS = {
+1:"When two roads intersect without signs or signals, you must be ready to stop if necessary to avoid a collision. This is a fundamental right-of-way rule.",
+2:"In New Jersey, you may not park within 10 feet of a fire hydrant.",
+3:"Approach close to the centerline and turn into the left lane going in your direction. This ensures smooth traffic flow.",
+4:"At uncontrolled intersections, reduce speed and be ready to stop. Treat it as a 4-way stop.",
+5:"Dim your lights when a car is approaching or you're following another vehicle. High beams can blind other drivers.",
+6:"On a two-lane road you must stop when a school bus has red lights flashing — from either direction. Stay stopped until lights turn off.",
+7:"Seat belts keep you from being thrown from the car, hitting the windshield, and sliding off the seat. All of the above.",
+8:"DUI means your senses or judgment are impaired by alcohol. Even small amounts can affect reaction time.",
+9:"Most arrested drunk drivers had been drinking beer — often because beer's alcohol content is underestimated.",
+10:"Know a truck's limitations: visibility, stopping distance, and maneuverability. Trucks have huge blind spots ('no-zones').",
+11:"Accident prevention formula: Be alert, Be prepared, Act in time — all of the above.",
+12:"If a vehicle is passing you, slow down to make the pass easier. Never speed up.",
+13:"Stop with enough distance to see the trucker's mirrors. If you can't see them, they can't see you.",
+14:"Under 21 with 0.01% BAC = 30-90 day suspension, community service, AND IDRC participation. All of the above.",
+15:"Studded snow tires legal in NJ between November 15 and April 1.",
+16:"Best way to reduce alcohol-related risk: don't drive at all after drinking.",
+17:"Hand up = Right Turn. Hand out = Left turn. Hand down = Slow/Stop.",
+18:"Slow down BEFORE entering a curve. Accelerate gently after straightening.",
+19:"GDL law: driver AND all passengers must wear seat belts.",
+20:"Roads are most slippery during the FIRST FEW MINUTES of rainfall — oil floats up.",
+21:"Always yield to: emergency vehicles, pedestrians, and vehicles already in the intersection.",
+22:"Altering a license: fine up to $1,000, up to 6 months jail, AND loss of driving privilege.",
+23:"5 oz wine ≈ 1½ oz whiskey ≈ 12 oz beer — all roughly equal alcohol. 'Standard drink.'",
+24:"Adverse weather increases a truck's stopping distance by 25%.",
+25:"NJ business/residential speed limit (unless posted) = 25 mph.",
+26:"In a skid, turn the wheel in the SAME direction the back of the car is sliding. ('Steer into the skid.')",
+27:"Examiner must be able to reach the brakes — no obstructions allowed.",
+28:"Hand-held phones legal only for Fire, Traffic accidents, or Medical emergencies.",
+29:"Traffic light top→bottom: Red, Yellow, Green.",
+30:"High beams: open country driving with no oncoming traffic. Switch to low beams within 500 ft of others.",
+31:"GDL Special Learners Permit: shared-residence passengers plus 1 additional.",
+32:"Provisional License (under 21): 1 non-household passenger.",
+33:"No parking within 25 feet of a crosswalk.",
+34:"GDL → Provisional needs: pass road test, age 17, and 6 months supervised. All three.",
+35:"Railroad crossing with flashing lights = STOP. Like a stop sign.",
+36:"Left turn from 2-way road: position close to the centerline.",
+37:"Provisional drivers: NO hand-held devices of any kind. All of the above.",
+38:"Fine for GDL condition violation = $100.",
+39:"Hand DOWN = slow or stop.",
+40:"BAC depends on amount, your weight, and time. All of the above.",
+41:"Right on red allowed only after a FULL stop and checking traffic (unless posted otherwise).",
+42:"Keep right except: impractical, passing, or one-way street.",
+43:"Insurance surcharges apply to DUI AND Breathalyzer Refusal convictions.",
+44:"In a skid, take your foot OFF the gas, then steer gently into the skid.",
+45:"Sharing road with trucks: wide turns, more stopping space, consistent speed. All of the above.",
+46:"3rd DUI = suspension of driving privilege.",
+47:"Signal at least 100 feet in advance of a turn.",
+48:"GDL Exam Permit (21+) = minimum 3 months supervised.",
+49:"If angry: give yourself time to cool off before driving.",
+50:"Special Learners Permit can't drive between 11:01 PM and 5:00 AM.",
+51:"Triangle = Yield sign.",
+52:"Student permit: must have supervising driver (21+), permit, AND insurance/registration. All of the above.",
+53:"Same as Q28: hand-held only for Fire/Accident/Medical.",
+54:"Uncontrolled intersection: reduce speed and be ready to stop.",
+55:"One solid, one broken centerline: pass only from the BROKEN side.",
+56:"Slipperiest during the first few minutes of rain.",
+57:"NJ: up to 3 points subtracted after 1 year with no moving violations.",
+58:"If you can't see the trucker's mirrors, you're in the 'no-zone' (blind spot).",
+59:"Solid white line at intersection: stop behind it for sign/light.",
+60:"Slow down BEFORE entering a curve.",
+61:"Steady yellow: stop before entering if you safely can.",
+62:"12 oz beer ≈ 1½ oz of 86-proof whiskey.",
+63:"Railroad flashing lights = STOP.",
+64:"Trucks: know their visibility, stopping distance, and maneuverability limits.",
+65:"Illegal license: $200-$500 fine and/or 30-90 days jail.",
+66:"Truck stopping increases ~50% more in adverse weather.",
+67:"Under 21: any BAC over .01% counts. Zero tolerance.",
+68:"GDL supervisor: 21+, NJ licensed, licensed at least 3 years. All of the above.",
+69:"GDL permit holder 21+ — no driving hour restrictions.",
+70:"Special Learners Permit: no driving 11:01 PM – 5:00 AM.",
+71:"Child restraint required: under 5 in front seat, under 18mo anywhere, all of the above.",
+72:"No parking within 10 ft of a fire hydrant.",
+73:"Special Learners Permit: shared-residence passengers plus 1 additional.",
+74:"City driving: look at least 12 seconds ahead.",
+75:"The 2-second rule is for safe FOLLOWING DISTANCE.",
+76:"Just above .05% BAC = DOUBLE accident risk.",
+77:"Stop with enough distance behind a truck to avoid its blind spots.",
+78:"Right on red: come to a FULL stop and check traffic first.",
+79:".10% BAC = 6× accident risk.",
+80:"Only TIME sobers you up — coffee/shower/air don't work.",
+81:"Best way to communicate: use your horn and lights (used sparingly).",
+82:"If you sell your car: turn license plates in to an MVC inspection facility.",
+83:"City driving: slow down, watch pedestrians, look 12 sec ahead — all of the above.",
+84:"Provisional drivers: NO hand-held electronics. All of the above.",
+85:"Provisional under 21 may drive unsupervised after passing road test after 6 months supervised (excluding suspensions).",
+86:"Yield to: emergency vehicles, pedestrians, and vehicles in the intersection.",
+87:"Studded snow tires legal Nov 15 – Apr 1.",
+88:"Uphill, curb on right: turn wheels AWAY from curb (so car rolls into curb).",
+89:"Altering license: $1,000 fine, 6 months jail, loss of privilege.",
+90:"Under-21 GDL hours: 5:01 AM to 11:00 PM.",
+91:"Social host liability: you could become involved in a lawsuit.",
+92:"Provisional period = 1 year.",
+93:"Downhill, curb on right: turn wheels TOWARD the curb.",
+94:"Can't park: hydrant, bus stop, driveway. All of the above.",
+95:"Double solid lines: no crossing from either direction.",
+96:"Moped: any valid license (basic, motorcycle, or moped).",
+97:"If angry: give yourself time to cool off.",
+98:"Best way to avoid alcohol-related accidents: don't drive after drinking.",
+99:"Left turn from 2-way onto 4-lane: close to centerline, before center, into left lane. All of the above.",
+100:"Skid: take foot off the gas.",
+101:"Child restraint: under 18 months in any seat. Use rear-facing seats for infants.",
+102:"Railroad sign = Black and Yellow Circle (warning).",
+103:"Sharing road with trucks: wide turns, more stopping space, consistent passing speed. All of the above.",
+104:"Off the pavement: slow down, then turn back onto pavement slowly. Don't jerk the wheel.",
+105:"Road Test: bring registration, permit, AND insurance ID. All three.",
+106:"Green light = Go WHEN SAFE (still yield to pedestrians/cross traffic).",
+107:"Tire blowout: grip wheel firmly, let off gas, coast to a stop. All of the above.",
+108:"No parking within 10 feet of a fire hydrant.",
+109:"Angry: give yourself time to cool off.",
+110:"In a curve, your vehicle tends to keep going straight (inertia). Slow down before.",
+111:"Solid/broken centerlines: pass only from the broken side.",
+112:"Railroad flashing lights = STOP.",
+113:"Truck stopping increase in adverse weather = 25% more.",
+114:"Dim to low beam when a car is approaching OR you're behind another car.",
+115:"Address change: report to MVC within 1 week.",
+116:"Avoid highway hypnosis: don't fix your eyes on one thing for more than a few seconds.",
+117:"Hydroplaning: slow down. Don't slam brakes or jerk wheel.",
+118:"Moped: any valid license.",
+119:"Special Learners Permit hours: no driving 11:01 PM – 5:00 AM.",
+120:"Under 21: BAC over .01% = under influence. Zero tolerance.",
+121:"12 oz beer ≈ 1½ oz of 86-proof whiskey.",
+122:"Moving to NJ: vehicle inspection within 14 days of registering.",
+123:"Emergency vehicle approaching: pull over to the extreme RIGHT and stop.",
+124:"Accident prevention formula: alert, prepared, act in time.",
+125:"GDL → Provisional: pass road test, age 17, 6 months supervised driving.",
+126:"School zone speed limit (unless posted) = 25 mph.",
+127:"GDL Exam Permit (21+) supervised period = minimum 3 months.",
+128:"Adult (21+): BAC over .08% = under influence (legal limit).",
+129:"Yield sign = Triangle (point down on signs).",
+130:"Provisional may drive unsupervised after road test after 6 months supervised (excluding suspensions).",
+131:"Use signals when: changing lanes, turning, slowing. All of the above.",
+132:"Under-21 GDL hours: 5:01 AM to midnight.",
+133:"School bus with red lights flashing on 2-lane road: STOP.",
+134:"Only TIME sobers up someone who's been drinking.",
+135:"GDL supervisor: 21+, NJ licensed, licensed at least 3 years.",
+136:"Know trucks' visibility/stopping/maneuverability limits.",
+137:"Tire blowout: slow down gradually. Don't slam brakes.",
+138:"Keep right except when impractical, passing, or on one-way.",
+139:"Special Learners Permit holder eligible for basic license at 18 with completed Provisional requirements.",
+140:"Provisional driver in daytime rain: wipers AND headlights on.",
+141:"Altering license: $1,000 fine, 6 months jail, loss of privilege.",
+142:"Diamond shape = Warning sign.",
+143:"Slightly above .05% BAC = double accident risk.",
+144:"Downhill, curb on right: wheels turned TOWARD the curb.",
+145:"Deceleration lane = an extra lane at a highway exit. Use it to slow down.",
+146:"Social host liability: you could be involved in a lawsuit.",
+147:"Provisional drivers: no hand-held devices. All of the above.",
+148:"'Talk' to drivers via horn and lights (used appropriately).",
+149:"Stop with enough distance from a truck to stay out of blind spots.",
+150:"Best way: don't drive at all after drinking.",
+151:"Always yield to emergency vehicles, pedestrians, and cars already in the intersection.",
+152:"Eight-sided sign = STOP.",
+153:"School zone speed limit = 25 mph (unless posted).",
+154:"Hand down = slow or stop.",
+155:"Missed exit: keep going to the NEXT exit. Never back up.",
+156:"In a curve, your car tends to keep going straight.",
+157:"Behind a stopped truck: leave enough distance to avoid blind spots.",
+158:"Under-21 GDL hours: 5:01 AM to midnight.",
+159:"Solid white line at intersection = stop behind it.",
+160:"Space cushion = time to react.",
+161:"At night: stop within the distance you can SEE ahead.",
+162:"Trucks: know visibility, stopping distance, maneuverability limits.",
+163:"Hand-held phones legal only for Fire/Accident/Medical emergencies.",
+164:"Passing a truck: remember the no-zones (blind spots).",
+165:"Moped: any valid license.",
+166:"Hand UP = Right Turn.",
+167:"Social host liability: lawsuit possible.",
+168:"Signal at least 100 feet before turning.",
+169:"After suspension restored: 1 year probation.",
+170:"1½ oz of 86-proof whiskey = 12 oz of beer (alcohol-wise).",
+171:"Child restraint required: under 18 months in any seat, all of the above.",
+172:"Skid: steer in the SAME direction the back is skidding.",
+173:"All standard drinks are about equal in alcohol content.",
+174:"Provisional period = 1 year.",
+175:"Legal BAC limit (adult) = .08%.",
+176:"GDL remedial training: 4+ points OR DUI conviction.",
+177:"Implied Consent: by driving, you've agreed to a breath test if arrested for DUI.",
+178:"Solid/broken: pass only on the broken-line side.",
+179:"All NJ vehicles must carry LIABILITY insurance.",
+180:"You may pass on the right when the driver ahead is turning left and there's a proper lane.",
+181:"Provisional under 21: 1 non-household passenger.",
+182:"Road test: registration, permit, insurance — all required.",
+183:"2-4 drinks impairs reaction time, coordination, AND judgment.",
+184:"Address change: report within 1 week.",
+185:"Following distance: at least 2 seconds.",
+186:"Insurance Surcharge: DUI AND Breathalyzer Refusal.",
+187:"Uphill, curb on right: wheels AWAY from curb.",
+188:"Slipperiest in the first few minutes of rain.",
+189:"Under 21: BAC over .01% = under influence.",
+190:"Railroad flashing lights = STOP.",
+191:"GDL → Provisional: pass road test, age 17, 6 mo supervised.",
+192:"No parking within 25 ft of a crosswalk.",
+193:"Fine for GDL violation = $100.",
+194:"Moved to NJ: inspect car within 14 days of registering.",
+195:"High beams = open country driving.",
+196:"In a skid, take your foot off the gas.",
+197:"3rd DUI = suspension of driving privilege.",
+198:"GDL Exam Permit (21+) = 3 months min supervised.",
+199:"Can't see truck's mirrors? You're in the no-zone.",
+200:"Student driver violation: both student AND instructor responsible.",
+201:"You may obtain a Special Learner Permit at age 16, before turning 17, to enroll in a behind-the-wheel training course through a Secondary or Commercial Driving School.",
+202:"All conditions apply — the applicant must be 16-17, enrolled in behind-the-wheel training with a commercial driving school, AND have signed parental/guardian consent.",
+203:"At a BAC of .15%, your risk of causing a crash is 25× greater than sober. Risk grows exponentially as BAC rises (double at .05%, 6× at .10%, 25× at .15%).",
+204:"Yellow-green pentagon signs indicate sharing the road with pedestrians, school zones, bicyclists, and similar non-motorist users.",
+205:"An acceleration lane is the extra lane at a highway ENTRANCE used to merge up to traffic speed. (A deceleration lane is at the EXIT, for slowing down.)",
+206:"Traffic violations in a construction zone carry double fines. Workers and changing road conditions make these areas extra dangerous.",
+207:"In farm country and open land, livestock and deer can cross the road unexpectedly. Stay alert, especially at dawn and dusk.",
+208:"At a railroad crossing with flashing lights, stop at least 15 feet from the nearest rail. Do not cross until the lights stop flashing.",
+209:"Report a lost or stolen driver license, permit, or non-driver ID to the police first. They can investigate identity theft. Then notify the MVC.",
+210:"Failure to stop for pedestrians in a crosswalk: up to $500 fine, 25 days in jail, 6-month license suspension, 2 points, and community service.",
+211:"The 3-second rule helps maintain a safe following distance at any speed. Pick a fixed point — you should reach it at least 3 seconds after the car ahead.",
+212:"During the 2-year probationary period after a special learner or examination permit, you must enroll in the Probationary Driver Program if convicted of 2+ moving violations totaling 4+ points.",
+213:"When signaling a right turn, motorists must yield to pedestrians, bicyclists, AND inline skaters/skateboarders — anyone in or near the crosswalk or bike lane.",
+214:"In extreme cases, aggressive driving (speeding, tailgating, weaving, road rage) can cause an accident with serious or fatal consequences.",
+215:"A GDL driver under 21 must display a reflective red decal on the front AND rear license plate. This lets police and other motorists identify probationary drivers.",
+216:"A flashing red traffic light works just like a stop sign: come to a complete stop, then yield to traffic and pedestrians before proceeding.",
+217:"Driving on public or private property (a parking lot, gas station, etc.) just to avoid a traffic signal or sign earns you a 2-point moving violation plus a fine.",
+218:"If brakes fail, downshift to a lower gear to use engine braking, and pump the brake pedal several times — this can sometimes restore brake pressure.",
+219:"At 60 mph on a dry surface, total braking distance (reaction + stop) is about 300 feet — roughly the length of a football field.",
+220:"Anyone 13–21 can have driving privileges postponed or suspended for alcohol-related offenses, graffiti, OR setting false alarms.",
+221:"If you can't see the truck driver's mirrors, you're in a no-zone — which is the same thing as a blind spot. Both terms describe the same area.",
+222:"Fines are imposed for idling more than 3 minutes, violating the move-over law (move over for stopped emergency vehicles), AND failing to remove snow or ice from your vehicle."
+};
+
+/* ===================== STATE ===================== */
+const LS_KEY = 'njpro_state_v1';
+let state = loadState();
+
+function loadState() {
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const s = JSON.parse(raw);
+      if (!s.miniQuiz) s.miniQuiz = {}; // {idx: {best, attempts}}
+      if (!s.flashKnown) s.flashKnown = {};
+      return s;
+    }
+  } catch(e){}
+  return {
+    learned: {},
+    wrong: {},
+    flagged: {},
+    answered: {},
+    bestExam: null,
+    theme: 'dark',
+    examDate: '2026-05-28T08:00:00',
+    miniQuiz: {},
+    flashKnown: {}
+  };
+}
+function save() { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
+
+/* ===================== QUIZ ENGINE ===================== */
+let quiz = null; // { questions:[], idx:0, mode, picks:{id:i}, startedAt, timerEnd, timerInterval, examMode }
+
+function startMode(mode) {
+  let qs;
+  let opts = { mode, examMode: false, timerSec: 0 };
+  switch(mode) {
+    case 'study':
+      qs = QUESTIONS.slice();
+      break;
+    case 'exam':
+      qs = shuffle(QUESTIONS.slice()).slice(0, 50);
+      opts.examMode = true;
+      opts.timerSec = 20 * 60;
+      break;
+    case 'review':
+      qs = Object.keys(state.wrong).map(id => QUESTIONS.find(q => q.id == id)).filter(Boolean);
+      if (!qs.length) return toast('Nothing to review — get some wrong first 😄');
+      qs = shuffle(qs);
+      break;
+    case 'flagged':
+      qs = Object.keys(state.flagged).map(id => QUESTIONS.find(q => q.id == id)).filter(Boolean);
+      if (!qs.length) return toast('Nothing flagged yet. Tap 🚩 during a quiz.');
+      break;
+    case 'mastered':
+      qs = Object.keys(state.learned).map(id => QUESTIONS.find(q => q.id == id)).filter(Boolean);
+      if (!qs.length) return toast('Master some questions first!');
+      qs = shuffle(qs);
+      break;
+    case 'shuffle':
+      qs = shuffle(QUESTIONS.slice());
+      break;
+    case 'category':
+      qs = QUESTIONS.filter(q => q.c === opts.cat);
+      break;
+  }
+  startQuiz(qs, opts);
+}
+
+function startCategory(cat) {
+  const qs = QUESTIONS.filter(q => q.c === cat);
+  startQuiz(qs, { mode: 'category:' + cat });
+}
+
+function startQuiz(qs, opts) {
+  quiz = {
+    questions: qs,
+    idx: 0,
+    mode: opts.mode,
+    examMode: !!opts.examMode,
+    picks: {},
+    startedAt: Date.now(),
+    timerEnd: opts.timerSec ? (Date.now() + opts.timerSec * 1000) : 0,
+    timerInterval: null
+  };
+  showScreen('quiz');
+  if (quiz.timerEnd) startTimer();
+  renderQuestion();
+}
+
+function renderQuestion() {
+  const q = quiz.questions[quiz.idx];
+  const total = quiz.questions.length;
+  document.getElementById('q-idx').textContent = quiz.idx + 1;
+  document.getElementById('q-total').textContent = total;
+  document.getElementById('q-cat').textContent = q.c;
+  document.getElementById('q-mode').textContent = labelForMode(quiz.mode);
+  document.getElementById('q-bar').style.width = ((quiz.idx)/total*100) + '%';
+  document.getElementById('q-text').textContent = q.q;
+  document.getElementById('flag-btn').classList.toggle('active', !!state.flagged[q.id]);
+
+  const opts = document.getElementById('q-options');
+  opts.innerHTML = q.o.map((opt, i) =>
+    `<div class="option" data-i="${i}" onclick="pickOption(${i})">
+       <span class="letter">${String.fromCharCode(65+i)}</span>
+       <span class="opt-text">${escapeHtml(opt)}</span>
+     </div>`
+  ).join('');
+  document.getElementById('q-explanation').innerHTML = '';
+
+  // Restore prior pick in this session
+  if (quiz.picks[q.id] != null) {
+    revealAnswer(quiz.picks[q.id], false);
+  }
+
+  document.getElementById('prev-btn').disabled = (quiz.idx === 0);
+  document.getElementById('next-btn').textContent = (quiz.idx === total - 1) ? 'Finish ✓' : 'Next →';
+}
+
+function pickOption(i) {
+  const q = quiz.questions[quiz.idx];
+  if (quiz.picks[q.id] != null) return; // already answered (locked per question in exam mode too)
+  quiz.picks[q.id] = i;
+
+  if (quiz.examMode) {
+    // In exam mode: record but don't reveal until finish
+    document.querySelectorAll('.option').forEach((el, idx) => {
+      el.classList.toggle('correct', idx === i);
+      el.classList.add('disabled');
+    });
+    // recolor as a "selected" rather than correct
+    document.querySelectorAll('.option').forEach((el, idx) => {
+      if (idx === i) { el.classList.remove('correct'); el.style.borderColor = 'var(--accent)'; el.style.background = 'rgba(16,185,129,0.10)'; }
+    });
+  } else {
+    revealAnswer(i, true);
+    // Update mastered/wrong banks
+    if (i === q.a) {
+      state.learned[q.id] = true;
+      delete state.wrong[q.id];
+    } else {
+      state.wrong[q.id] = true;
+      delete state.learned[q.id];
+    }
+    state.answered[q.id] = i;
+    save();
+    updateHomeStats();
+  }
+}
+
+function revealAnswer(i, withExplanation) {
+  const q = quiz.questions[quiz.idx];
+  document.querySelectorAll('.option').forEach((el, idx) => {
+    el.classList.add('disabled');
+    if (idx === q.a) el.classList.add('correct');
+    else if (idx === i) el.classList.add('wrong');
+  });
+  if (withExplanation) {
+    const exp = EXPLANATIONS[q.id] || ('The correct answer is: ' + q.o[q.a]);
+    document.getElementById('q-explanation').innerHTML =
+      `<div class="explanation">
+         <div class="e-title">💡 Explanation</div>
+         <div class="e-text">${escapeHtml(exp)}</div>
+       </div>`;
+  }
+}
+
+function nextQuestion() {
+  if (quiz.idx >= quiz.questions.length - 1) return finishQuiz();
+  quiz.idx++;
+  renderQuestion();
+}
+function prevQuestion() {
+  if (quiz.idx === 0) return;
+  quiz.idx--;
+  renderQuestion();
+}
+
+function toggleFlag() {
+  const q = quiz.questions[quiz.idx];
+  if (state.flagged[q.id]) { delete state.flagged[q.id]; toast('Unflagged'); }
+  else { state.flagged[q.id] = true; toast('Flagged 🚩'); }
+  save();
+  document.getElementById('flag-btn').classList.toggle('active', !!state.flagged[q.id]);
+  updateHomeStats();
+}
+
+function finishQuiz() {
+  if (quiz.timerInterval) { clearInterval(quiz.timerInterval); quiz.timerInterval = null; }
+  let correct = 0;
+  const wrongIds = [];
+  quiz.questions.forEach(q => {
+    const pick = quiz.picks[q.id];
+    if (pick === q.a) {
+      correct++;
+      if (quiz.examMode) { state.learned[q.id] = true; delete state.wrong[q.id]; }
+    } else if (pick != null) {
+      wrongIds.push(q.id);
+      if (quiz.examMode) { state.wrong[q.id] = true; delete state.learned[q.id]; }
+    } else if (quiz.examMode) {
+      // unanswered = wrong in exam mode
+      wrongIds.push(q.id);
+      state.wrong[q.id] = true;
+    }
+  });
+  const total = quiz.questions.length;
+  const pct = Math.round(correct / total * 100);
+  const elapsed = Math.round((Date.now() - quiz.startedAt) / 1000);
+
+  if (quiz.examMode) {
+    if (!state.bestExam || pct > state.bestExam.score) {
+      state.bestExam = { score: pct, total, date: new Date().toISOString() };
+    }
+  }
+  if (typeof quiz.miniIdx === 'number') {
+    const prev = state.miniQuiz[quiz.miniIdx];
+    if (!prev || pct > prev.best) {
+      state.miniQuiz[quiz.miniIdx] = { best: pct, attempts: (prev?.attempts || 0) + 1 };
+    } else {
+      prev.attempts = (prev.attempts || 0) + 1;
+    }
+  }
+  save();
+
+  document.getElementById('res-correct').textContent = correct;
+  document.getElementById('res-wrong').textContent = total - correct;
+  document.getElementById('res-total').textContent = total;
+  document.getElementById('res-time').textContent = formatDuration(elapsed);
+  const scoreEl = document.getElementById('res-score');
+  scoreEl.textContent = pct + '%';
+  scoreEl.className = 'score-big ' + (pct >= 80 ? 'pass' : 'fail');
+
+  let icon, title, sub;
+  if (quiz.examMode) {
+    if (pct >= 80) { icon='🎉'; title='You passed!'; sub=`Mock exam passing score is 80%. You're ready for May 28!`; }
+    else { icon='📚'; title='Keep practicing'; sub=`You need 80% to pass. ${total-correct} to review.`; }
+  } else {
+    if (correct === total) { icon='🏆'; title='Perfect!'; sub='Mastered every question in this session.'; }
+    else if (pct >= 80) { icon='👍'; title='Strong work'; sub=`${correct} correct, ${total-correct} to review.`; }
+    else { icon='📚'; title='Review time'; sub=`Focus on the wrong ones below.`; }
+  }
+  document.getElementById('res-icon').textContent = icon;
+  document.getElementById('res-title').textContent = title;
+  document.getElementById('res-sub').textContent = sub;
+  document.getElementById('res-retry').onclick = () => {
+    if (wrongIds.length === 0) return goHome();
+    const qs = wrongIds.map(id => QUESTIONS.find(q => q.id == id));
+    startQuiz(qs, { mode: 'review' });
+  };
+
+  showScreen('result');
+  updateHomeStats();
+}
+
+function exitQuiz() {
+  if (confirm('Exit this quiz? Your progress on the answered questions is saved.')) {
+    if (quiz?.timerInterval) clearInterval(quiz.timerInterval);
+    goHome();
+  }
+}
+
+function retryWrong() {
+  // wired dynamically in finishQuiz
+}
+
+function startTimer() {
+  const tEl = document.getElementById('q-timer');
+  tEl.classList.remove('hidden');
+  const tick = () => {
+    const ms = quiz.timerEnd - Date.now();
+    if (ms <= 0) {
+      tEl.textContent = '0:00';
+      clearInterval(quiz.timerInterval);
+      toast('⏰ Time up!');
+      finishQuiz();
+      return;
+    }
+    const s = Math.floor(ms/1000);
+    const m = Math.floor(s/60);
+    const ss = s % 60;
+    tEl.textContent = m + ':' + String(ss).padStart(2,'0');
+    tEl.classList.toggle('danger', s < 60);
+  };
+  tick();
+  quiz.timerInterval = setInterval(tick, 500);
+}
+
+function labelForMode(m) {
+  if (m === 'study') return 'Study';
+  if (m === 'exam') return 'Mock Exam';
+  if (m === 'review') return 'Review';
+  if (m === 'flagged') return 'Flagged';
+  if (m === 'mastered') return 'Mastered';
+  if (m === 'shuffle') return 'Shuffle';
+  if (m?.startsWith('category:')) return m.split(':')[1];
+  if (m?.startsWith('mini:')) return 'Mini Quiz #' + m.split(':')[1];
+  return m || '';
+}
+
+/* ===================== HOME ===================== */
+function showScreen(s) {
+  ['home','quiz','result','list','flash','mindmap','miniquiz'].forEach(id => {
+    document.getElementById('screen-'+id).style.display = (s === id) ? 'block' : 'none';
+  });
+  // Highlight nav
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  if (s === 'home') document.querySelector('.nav-tab[data-tab="home"]').classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+function goHome() { showScreen('home'); updateHomeStats(); }
+
+function updateHomeStats() {
+  const total = QUESTIONS.length;
+  const mastered = Object.keys(state.learned).length;
+  const review = Object.keys(state.wrong).length;
+  const flagged = Object.keys(state.flagged).length;
+  const answered = Object.keys(state.answered).length;
+  const pct = Math.round(answered/total*100);
+
+  document.getElementById('prog-count').textContent = `${answered} / ${total} answered`;
+  document.getElementById('prog-bar').style.width = pct + '%';
+  document.getElementById('ring-pct').textContent = pct + '%';
+  const ring = document.getElementById('ring-fill');
+  const C = 2 * Math.PI * 40;
+  ring.style.strokeDasharray = C;
+  ring.style.strokeDashoffset = C - (pct/100 * C);
+  document.getElementById('prog-sub').textContent = pct === 100
+    ? '🎉 You answered every question — keep reviewing!'
+    : pct >= 60 ? 'Great pace — keep going!'
+    : pct >= 25 ? 'Building momentum.'
+    : 'Get started — pick a mode below';
+
+  document.getElementById('st-mastered').textContent = mastered;
+  document.getElementById('st-review').textContent = review;
+  document.getElementById('st-flagged').textContent = flagged;
+  document.getElementById('st-best').textContent = state.bestExam ? (state.bestExam.score + '%') : '—';
+
+  document.getElementById('mode-review-count').textContent = review;
+  document.getElementById('mode-flag-count').textContent = flagged;
+}
+
+/* ===================== CATEGORIES ===================== */
+function renderCategoryChips() {
+  const counts = {};
+  QUESTIONS.forEach(q => counts[q.c] = (counts[q.c]||0) + 1);
+  const cats = Object.keys(counts).sort();
+  document.getElementById('category-chips').innerHTML = cats.map(c =>
+    `<button class="chip" onclick="startCategory('${c.replace(/'/g,"\\'")}')">
+       ${escapeHtml(c)} <span class="count">${counts[c]}</span>
+     </button>`
+  ).join('');
+}
+
+/* ===================== SEARCH ===================== */
+function renderSearch(term) {
+  const el = document.getElementById('search-results');
+  if (!term || term.length < 2) { el.innerHTML = ''; return; }
+  const t = term.toLowerCase();
+  const matches = QUESTIONS.filter(q =>
+    q.q.toLowerCase().includes(t) ||
+    q.c.toLowerCase().includes(t) ||
+    q.o.some(o => o.toLowerCase().includes(t))
+  ).slice(0, 30);
+  if (matches.length === 0) {
+    el.innerHTML = '<div class="empty"><div class="t">No matches</div><div class="s">Try a shorter or different keyword.</div></div>';
+    return;
+  }
+  el.innerHTML = matches.map(q => `
+    <div class="q-item">
+      <div class="q-cat">${escapeHtml(q.c)}</div>
+      <div>${escapeHtml(q.q)}</div>
+      <div class="q-ans right">✓ ${escapeHtml(q.o[q.a])}</div>
+    </div>
+  `).join('');
+}
+
+/* ===================== LIST SCREEN (mastered/review/flagged) ===================== */
+function showList(kind) {
+  let title, sub, ids;
+  if (kind === 'mastered') { title='✅ Mastered'; sub='Questions you got right last time.'; ids = Object.keys(state.learned); }
+  else if (kind === 'review') { title='📚 Need Review'; sub='Questions you got wrong — focus here.'; ids = Object.keys(state.wrong); }
+  else if (kind === 'flagged') { title='🚩 Flagged'; sub='Bookmarked for later.'; ids = Object.keys(state.flagged); }
+  document.getElementById('list-title').textContent = title;
+  document.getElementById('list-sub').textContent = sub + ` (${ids.length})`;
+  const body = document.getElementById('list-body');
+  if (!ids.length) {
+    body.innerHTML = `<div class="empty"><div class="ic">${kind==='mastered'?'📭':kind==='review'?'🎯':'🚩'}</div><div class="t">Nothing here yet</div><div class="s">Answer some questions to fill this list.</div></div>`;
+    document.getElementById('list-quiz-btn').style.display = 'none';
+  } else {
+    body.innerHTML = ids.map(id => {
+      const q = QUESTIONS.find(x => x.id == id);
+      if (!q) return '';
+      const isRight = kind === 'mastered';
+      return `<div class="q-item">
+        <div class="q-cat">${escapeHtml(q.c)}</div>
+        <div>${escapeHtml(q.q)}</div>
+        <div class="q-ans ${isRight?'right':'wrong'}">${isRight?'✓':'✗'} ${escapeHtml(q.o[q.a])}</div>
+      </div>`;
+    }).join('');
+    document.getElementById('list-quiz-btn').style.display = '';
+    document.getElementById('list-quiz-btn').onclick = () => {
+      const qs = ids.map(id => QUESTIONS.find(q => q.id == id)).filter(Boolean);
+      startQuiz(shuffle(qs), { mode: kind });
+    };
+  }
+  showScreen('list');
+}
+
+function quizListed() { /* wired above */ }
+
+/* ===================== NAV ===================== */
+function navTab(tab) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.nav-tab[data-tab="${tab}"]`).classList.add('active');
+  if (tab === 'home') goHome();
+  else showList(tab);
+}
+
+/* ===================== COUNTDOWN ===================== */
+function updateCountdown() {
+  const now = new Date();
+  let ms = EXAM_DATE - now;
+  if (ms < 0) ms = 0;
+  const d = Math.floor(ms / 86400000);
+  const h = Math.floor((ms % 86400000) / 3600000);
+  const m = Math.floor((ms % 3600000) / 60000);
+  const s = Math.floor((ms % 60000) / 1000);
+  document.getElementById('cd-days').textContent = d;
+  document.getElementById('cd-hrs').textContent = String(h).padStart(2,'0');
+  document.getElementById('cd-mins').textContent = String(m).padStart(2,'0');
+  document.getElementById('cd-secs').textContent = String(s).padStart(2,'0');
+}
+
+/* ===================== THEME ===================== */
+function toggleTheme() {
+  state.theme = state.theme === 'light' ? 'dark' : 'light';
+  applyTheme();
+  save();
+}
+function applyTheme() {
+  document.documentElement.setAttribute('data-theme', state.theme);
+  document.getElementById('theme-btn').textContent = state.theme === 'light' ? '☀️' : '🌙';
+}
+
+/* ===================== RESET ===================== */
+function confirmReset() {
+  if (confirm('Reset ALL progress (mastered, review, flagged, best exam)?')) {
+    state = {
+      learned:{}, wrong:{}, flagged:{}, answered:{},
+      bestExam:null, theme: state.theme, examDate: state.examDate
+    };
+    save();
+    updateHomeStats();
+    toast('Progress reset');
+  }
+}
+
+/* ===================== UTIL ===================== */
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+function formatDuration(s) {
+  const m = Math.floor(s/60), ss = s%60;
+  return m + 'm ' + ss + 's';
+}
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+let toastTimer;
+function toast(msg) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => el.classList.remove('show'), 1800);
+}
+
+/* ===================== FLASHCARDS ===================== */
+let flash = { deck: 'all', cards: [], idx: 0, flipped: false };
+
+function openFlash() {
+  buildDeckChips();
+  setFlashDeck('all');
+  showScreen('flash');
+}
+
+function buildDeckChips() {
+  const decks = [
+    { key:'all', label:'All 222', icon:'📦' },
+    { key:'review', label:'Needs Review', icon:'📚' },
+    { key:'flagged', label:'Flagged', icon:'🚩' },
+    { key:'mastered', label:'Mastered', icon:'✅' },
+    { key:'unseen', label:'Not Yet Seen', icon:'✨' }
+  ];
+  document.getElementById('deck-chips').innerHTML = decks.map(d =>
+    `<button class="chip ${flash.deck===d.key?'active':''}" data-deck="${d.key}" onclick="setFlashDeck('${d.key}')">${d.icon} ${d.label}</button>`
+  ).join('');
+}
+
+function setFlashDeck(key) {
+  flash.deck = key;
+  let cards;
+  if (key === 'all') cards = QUESTIONS.slice();
+  else if (key === 'review') cards = Object.keys(state.wrong).map(id => QUESTIONS.find(q => q.id == id)).filter(Boolean);
+  else if (key === 'flagged') cards = Object.keys(state.flagged).map(id => QUESTIONS.find(q => q.id == id)).filter(Boolean);
+  else if (key === 'mastered') cards = Object.keys(state.learned).map(id => QUESTIONS.find(q => q.id == id)).filter(Boolean);
+  else if (key === 'unseen') cards = QUESTIONS.filter(q => !(q.id in state.answered));
+  if (!cards.length) {
+    flash.cards = [];
+    document.getElementById('flash-q').textContent = 'No cards in this deck yet — try another one.';
+    document.getElementById('flash-cat').textContent = '—';
+    document.getElementById('flash-counter').textContent = '0 / 0';
+    document.getElementById('flash-card').classList.remove('flipped');
+    buildDeckChips();
+    return;
+  }
+  flash.cards = cards;
+  flash.idx = 0;
+  flash.flipped = false;
+  buildDeckChips();
+  renderFlash();
+}
+
+function renderFlash() {
+  if (!flash.cards.length) return;
+  const q = flash.cards[flash.idx];
+  document.getElementById('flash-cat').textContent = q.c;
+  document.getElementById('flash-q').textContent = q.q;
+  document.getElementById('flash-ans').textContent = String.fromCharCode(65 + q.a) + '. ' + q.o[q.a];
+  document.getElementById('flash-exp').textContent = EXPLANATIONS[q.id] || ('The correct answer is: ' + q.o[q.a]);
+  document.getElementById('flash-counter').textContent = (flash.idx + 1) + ' / ' + flash.cards.length + '  ·  Deck: ' + flash.deck;
+  document.getElementById('flash-prev').disabled = (flash.idx === 0);
+  document.getElementById('flash-next').disabled = (flash.idx === flash.cards.length - 1);
+  document.getElementById('flash-card').classList.toggle('flipped', flash.flipped);
+}
+
+function flipFlash() {
+  if (!flash.cards.length) return;
+  flash.flipped = !flash.flipped;
+  document.getElementById('flash-card').classList.toggle('flipped', flash.flipped);
+}
+function flashPrev() {
+  if (flash.idx > 0) { flash.idx--; flash.flipped = false; renderFlash(); }
+}
+function flashNext() {
+  if (flash.idx < flash.cards.length - 1) { flash.idx++; flash.flipped = false; renderFlash(); }
+}
+function flashShuffle() {
+  shuffle(flash.cards);
+  flash.idx = 0; flash.flipped = false;
+  renderFlash();
+  toast('Deck shuffled 🔀');
+}
+function flashRate(known) {
+  if (!flash.cards.length) return;
+  const q = flash.cards[flash.idx];
+  if (known) {
+    state.learned[q.id] = true;
+    delete state.wrong[q.id];
+    state.flashKnown[q.id] = true;
+    state.answered[q.id] = q.a;
+  } else {
+    state.wrong[q.id] = true;
+    delete state.learned[q.id];
+  }
+  save();
+  updateHomeStats();
+  toast(known ? '✓ Marked as known' : '📚 Added to review');
+  if (flash.idx < flash.cards.length - 1) flashNext();
+  else toast('🎉 You finished this deck!');
+}
+
+/* ===================== MIND MAP ===================== */
+const CATEGORY_ICONS = {
+  "Alcohol":"🍺", "GDL":"🎓", "Trucks":"🚛", "Signs":"🚸", "Intersections":"🚦",
+  "Parking":"🅿️", "Turning":"↩️", "Lights":"💡", "School Buses":"🚌",
+  "Safety":"🛡️", "Accident Prevention":"⚠️", "Passing":"↪️", "Vehicle Equipment":"🔧",
+  "Hand Signals":"✋", "Curves":"🌀", "Weather":"🌧️", "Speed Limits":"🛑",
+  "Cell Phone":"📱", "Railroad":"🚂", "License":"🆔", "Safe Driving":"🚗",
+  "Road Markings":"🛣️", "Points":"📌", "Following Distance":"📏",
+  "Moped":"🛵", "Insurance":"📄", "Highway":"🛤️", "Emergency":"🚨",
+  "Emergency Vehicles":"🚑", "Pedestrians":"🚶"
+};
+
+function openMindMap() {
+  renderMindMap();
+  showScreen('mindmap');
+}
+
+function renderMindMap() {
+  const counts = {};
+  QUESTIONS.forEach(q => counts[q.c] = (counts[q.c]||0) + 1);
+  const cats = Object.keys(counts).sort();
+  document.getElementById('mm-cat-count').textContent = cats.length;
+  document.getElementById('mm-grid').innerHTML = cats.map(c => {
+    const qs = QUESTIONS.filter(q => q.c === c);
+    const mastered = qs.filter(q => state.learned[q.id]).length;
+    const isFull = mastered === qs.length;
+    return `<div class="mm-node" onclick="openMmCategory('${c.replace(/'/g,"\\'")}')">
+      <div class="mm-prog ${isFull?'full':''}">${mastered}/${qs.length}</div>
+      <div class="mm-icon">${CATEGORY_ICONS[c]||'📌'}</div>
+      <div class="mm-name">${escapeHtml(c)}</div>
+      <div class="mm-count">${counts[c]} question${counts[c]>1?'s':''}</div>
+    </div>`;
+  }).join('');
+  document.getElementById('mm-detail').innerHTML = '';
+}
+
+function openMmCategory(cat) {
+  document.querySelectorAll('.mm-node').forEach(n => n.classList.remove('active'));
+  const nodes = document.querySelectorAll('.mm-node');
+  nodes.forEach(n => { if (n.querySelector('.mm-name')?.textContent === cat) n.classList.add('active'); });
+  const qs = QUESTIONS.filter(q => q.c === cat);
+  const mastered = qs.filter(q => state.learned[q.id]).length;
+  const review = qs.filter(q => state.wrong[q.id]).length;
+  document.getElementById('mm-detail').innerHTML = `
+    <div class="mm-detail">
+      <h3>${CATEGORY_ICONS[cat]||'📌'} ${escapeHtml(cat)}</h3>
+      <div class="mm-detail-sub">${qs.length} questions · ${mastered} mastered · ${review} to review</div>
+      <div class="mm-actions">
+        <button class="btn btn-primary" onclick="startCategory('${cat.replace(/'/g,"\\'")}')">🎯 Quiz this topic</button>
+        <button class="btn btn-ghost" onclick="flashFromCategory('${cat.replace(/'/g,"\\'")}')">🃏 Flashcards</button>
+      </div>
+      ${qs.map(q => {
+        const status = state.learned[q.id] ? 'right' : (state.wrong[q.id] ? 'wrong' : '');
+        return `<div class="mm-q-line"><span class="dot ${status}"></span><span>${escapeHtml(q.q)}</span></div>`;
+      }).join('')}
+    </div>`;
+  document.getElementById('mm-detail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function flashFromCategory(cat) {
+  flash.cards = QUESTIONS.filter(q => q.c === cat);
+  flash.deck = 'cat:' + cat;
+  flash.idx = 0; flash.flipped = false;
+  showScreen('flash');
+  buildDeckChips();
+  renderFlash();
+}
+
+/* ===================== MINI QUIZZES ===================== */
+const MQ_COUNT = 22;
+const MQ_SIZE = 10;
+
+function getMiniBatch(idx) {
+  // Sequential chunks of 10. Use first 220 questions (IDs 1..220), 22 batches.
+  const start = idx * MQ_SIZE;
+  const ids = [];
+  for (let i = 0; i < MQ_SIZE; i++) ids.push(start + i + 1);
+  return ids.map(id => QUESTIONS.find(q => q.id === id)).filter(Boolean);
+}
+
+function openMiniQuizzes() {
+  renderMiniGrid();
+  showScreen('miniquiz');
+}
+
+function renderMiniGrid() {
+  let passed = 0, attempted = 0, scoreSum = 0, scoreN = 0;
+  let html = '';
+  for (let i = 0; i < MQ_COUNT; i++) {
+    const rec = state.miniQuiz[i];
+    const batch = getMiniBatch(i);
+    const firstId = batch[0]?.id || (i*10+1);
+    const lastId = batch[batch.length-1]?.id || (i*10+10);
+    let badgeClass = '', badgeText = 'Not started', cardClass = '', star = '';
+    if (rec) {
+      attempted++;
+      scoreSum += rec.best; scoreN++;
+      if (rec.best >= 80) { passed++; badgeClass = 'pass'; badgeText = rec.best + '%'; cardClass = 'passed'; star = '<div class="mq-star">⭐</div>'; }
+      else { badgeClass = 'fail'; badgeText = rec.best + '%'; cardClass = 'failed'; }
+    }
+    html += `<div class="mq-card ${cardClass}" onclick="startMiniQuiz(${i})">
+      ${star}
+      <div class="mq-num">Quiz #${i+1}</div>
+      <div class="mq-title">10 Questions</div>
+      <div class="mq-range">Q${firstId}–Q${lastId}</div>
+      <div class="mq-score">Best: <span class="badge ${badgeClass}">${badgeText}</span></div>
+    </div>`;
+  }
+  document.getElementById('mq-grid').innerHTML = html;
+  document.getElementById('mq-passed').textContent = passed;
+  document.getElementById('mq-attempted').textContent = attempted;
+  document.getElementById('mq-remaining').textContent = MQ_COUNT - passed;
+  document.getElementById('mq-avg').textContent = scoreN ? (Math.round(scoreSum/scoreN) + '%') : '—';
+}
+
+function startMiniQuiz(idx) {
+  const batch = getMiniBatch(idx);
+  if (!batch.length) return toast('Quiz unavailable');
+  startQuiz(batch, { mode: 'mini:' + (idx+1) });
+  quiz.miniIdx = idx;
+}
+
+document.addEventListener('keydown', e => {
+  const quizVisible = document.getElementById('screen-quiz').style.display === 'block';
+  if (!quizVisible) return;
+  if (e.key >= '1' && e.key <= '4') {
+    const i = parseInt(e.key,10) - 1;
+    const q = quiz?.questions[quiz.idx];
+    if (q && i < q.o.length) pickOption(i);
+  } else if (e.key === 'ArrowRight' || e.key === 'Enter') { nextQuestion(); }
+  else if (e.key === 'ArrowLeft') { prevQuestion(); }
+  else if (e.key.toLowerCase() === 'f') { toggleFlag(); }
+});
+
+/* ===================== INIT ===================== */
+applyTheme();
+updateHomeStats();
+renderCategoryChips();
+updateCountdown();
+setInterval(updateCountdown, 1000);
+document.getElementById('search-input').addEventListener('input', e => renderSearch(e.target.value));
+showScreen('home');
+</script>
+</body>
+</html>

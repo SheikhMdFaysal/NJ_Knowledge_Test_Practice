@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NJ Driver Knowledge Test</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      color: #fff;
+      padding-bottom: 120px;
+    }
+    
+    .header {
+      background: rgba(0,0,0,0.3);
+      padding: 16px 20px;
+      position: sticky;
+      top: 0;
+      backdrop-filter: blur(10px);
+      z-index: 100;
+    }
+    .header h1 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+    }
+    .header p {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    .card {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+    
+    .progress-section {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    .progress-ring {
+      width: 80px;
+      height: 80px;
+      position: relative;
+    }
+    .progress-ring svg {
+      transform: rotate(-90deg);
+    }
+    .progress-ring circle {
+      fill: none;
+      stroke-width: 8;
+    }
+    .progress-ring .track {
+      stroke: rgba(255,255,255,0.1);
+    }
+    .progress-ring .progress {
+      stroke-linecap: round;
+      transition: stroke-dashoffset 0.5s;
+    }
+    .progress-ring .text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .progress-info { flex: 1; }
+    .progress-info .title { font-size: 18px; font-weight: 700; }
+    .progress-info .subtitle { font-size: 13px; color: #94a3b8; margin-top: 4px; }
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 8px;
+    }
+    .progress-bar .fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .stat-card {
+      background: rgba(255,255,255,0.05);
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+    }
+    .stat-card .value {
+      font-size: 28px;
+      font-weight: 700;
+    }
+    .stat-card .label {
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 4px;
+    }
+    .stat-card.green .value { color: #10b981; }
+    .stat-card.red .value { color: #ef4444; }
+    .stat-card.blue .value { color: #3b82f6; }
+    
+    .btn {
+      display: block;
+      width: 100%;
+      padding: 16px 24px;
+      border: none;
+      border-radius: 12px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      text-align: center;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, #10b981, #059669);
+      color: #fff;
+    }
+    .btn-primary:hover { transform: translateY(-2px); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #ef4444, #dc2626);
+      color: #fff;
+    }
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+    
+    .question-card { display: none; }
+    .question-card.active { display: block; }
+    
+    .question-number {
+      font-size: 13px;
+      color: #94a3b8;
+      margin-bottom: 12px;
+    }
+    .question-text {
+      font-size: 17px;
+      font-weight: 600;
+      line-height: 1.5;
+      margin-bottom: 20px;
+    }
+    .options { display: flex; flex-direction: column; gap: 10px; }
+    
+    .option {
+      background: rgba(255,255,255,0.05);
+      border: 2px solid rgba(255,255,255,0.1);
+      border-radius: 12px;
+      padding: 14px 16px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .option:hover {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.2);
+    }
+    .option.correct {
+      background: rgba(16,185,129,0.2);
+      border-color: #10b981;
+    }
+    .option.wrong {
+      background: rgba(239,68,68,0.2);
+      border-color: #ef4444;
+    }
+    .option .letter {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+    .option.correct .letter { background: #10b981; }
+    .option.wrong .letter { background: #ef4444; }
+    .option .text { font-size: 15px; }
+    
+    .explanation {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 14px;
+      font-size: 13px;
+      color: #93c5fd;
+    }
+    .explanation .title {
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: #60a5fa;
+    }
+    .next-btn {
+      background: linear-gradient(135deg, #3b82f6, #2563eb);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      width: 100%;
+      margin-top: 14px;
+      transition: all 0.2s;
+    }
+    .next-btn:hover { transform: translateY(-2px); }
+    .nav-buttons { display: flex; gap: 10px; margin-top: 14px; }
+    .nav-buttons .nav-btn { flex: 1; }
+    .prev-btn {
+      background: rgba(255,255,255,0.15);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      padding: 14px 24px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .prev-btn:hover:not(:disabled) { background: rgba(255,255,255,0.25); }
+    .prev-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    
+    .result-buttons { display: flex; gap: 10px; margin-top: 20px; }
+    .result-buttons .btn { flex: 1; }
+    
+    .section-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: #94a3b8;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .question-list {
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .question-item {
+      padding: 12px;
+      background: rgba(255,255,255,0.03);
+      border-radius: 8px;
+      margin-bottom: 8px;
+    }
+    .question-item .q-text { font-size: 14px; font-weight: 500; margin-bottom: 6px; }
+    .question-item .q-answer { font-size: 12px; color: #10b981; }
+    .question-item.wrong .q-answer { color: #ef4444; }
+    
+    .nav-tabs {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.8);
+      backdrop-filter: blur(20px);
+      display: flex;
+      justify-content: space-around;
+      padding: 12px 0;
+      z-index: 100;
+    }
+    .nav-tab {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      color: #94a3b8;
+      font-size: 11px;
+      cursor: pointer;
+      padding: 8px 16px;
+      border-radius: 8px;
+      transition: all 0.2s;
+    }
+    .nav-tab.active { color: #10b981; background: rgba(16,185,129,0.1); }
+    .nav-tab .icon { font-size: 20px; }
+    
+    .message { text-align: center; padding: 40px 20px; }
+    .message .icon { font-size: 48px; margin-bottom: 16px; }
+    .message .title { font-size: 20px; font-weight: 700; margin-bottom: 8px; }
+    .message .text { color: #94a3b8; font-size: 14px; }
+    
+    .developer-credit {
+      text-align: center;
+      padding: 20px;
+      margin-top: 20px;
+    }
+    .developer-credit .photo {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      border: 3px solid #10b981;
+      margin-bottom: 10px;
+      object-fit: cover;
+    }
+    .developer-credit .name {
+      font-size: 16px;
+      font-weight: 600;
+      color: #fff;
+    }
+    .developer-credit .title {
+      font-size: 12px;
+      color: #94a3b8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🚗 NJ Driver Knowledge Test</h1>
+  <p>Practice all 200 questions - No repeats until all done</p>
+</div>
+
+<div class="container">
+
+  <div id="home-screen">
+    <div class="card">
+      <div class="progress-section">
+        <div class="progress-ring">
+          <svg width="80" height="80">
+            <circle class="track" cx="40" cy="40" r="34"></circle>
+            <circle class="progress" id="home-progress-ring" cx="40" cy="40" r="34" stroke="#10b981"></circle>
+          </svg>
+          <div class="text" id="home-percent">0%</div>
+        </div>
+        <div class="progress-info">
+          <div class="title" id="home-count">0 / 200</div>
+          <div class="subtitle">Questions Completed</div>
+          <div class="progress-bar">
+            <div class="fill" id="home-bar" style="width: 0%; background: #10b981;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-grid">
+      <div class="stat-card green">
+        <div class="value" id="stat-acquired">0</div>
+        <div class="label">Knowledge Acquired</div>
+      </div>
+      <div class="stat-card red">
+        <div class="value" id="stat-required">0</div>
+        <div class="label">Further Required</div>
+      </div>
+      <div class="stat-card blue">
+        <div class="value" id="stat-completed">0</div>
+        <div class="label">Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="value" id="stat-remaining">200</div>
+        <div class="label">Remaining</div>
+      </div>
+    </div>
+
+    <button class="btn btn-primary" onclick="startPractice()">🚀 Start Practice</button>
+  </div>
+
+  <div id="question-screen" class="question-card">
+    <div class="card">
+      <div class="question-number" id="q-number">Question 1 of 200</div>
+      <div class="progress-bar" style="margin-bottom: 20px;">
+        <div class="fill" id="q-progress" style="width: 0%; background: #10b981;"></div>
+      </div>
+      <div class="question-text" id="q-text">Question goes here</div>
+      <div class="options" id="q-options"></div>
+    </div>
+  </div>
+
+  <div id="result-screen" class="question-card">
+    <div class="message">
+      <div class="icon" id="result-icon">🏆</div>
+      <div class="title" id="result-title">Practice Complete!</div>
+      <div class="text" id="result-text">Great job!</div>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card green">
+        <div class="value" id="result-correct">0</div>
+        <div class="label">Correct</div>
+      </div>
+      <div class="stat-card red">
+        <div class="value" id="result-wrong">0</div>
+        <div class="label">Wrong</div>
+      </div>
+    </div>
+    <div class="result-buttons">
+      <button class="btn btn-primary" onclick="showHome()">🏠 Home</button>
+      <button class="btn btn-secondary" onclick="showKnowledge()">✅ Acquired</button>
+    </div>
+  </div>
+
+  <div id="knowledge-screen" class="question-card">
+    <div class="card">
+      <div class="section-title">
+        <span>✅</span> Already Knowledge Acquired (<span id="acquired-count">0</span>)
+      </div>
+      <div class="question-list" id="acquired-list"></div>
+    </div>
+    <button class="btn btn-primary" onclick="quizAcquired()">🎯 Quiz on Acquired</button>
+  </div>
+
+  <div id="required-screen" class="question-card">
+    <div class="card">
+      <div class="section-title">
+        <span>📚</span> Further Knowledge Required (<span id="required-count">0</span>)
+      </div>
+      <div class="question-list" id="required-list"></div>
+    </div>
+    <button class="btn btn-danger" onclick="quizRequired()">🎯 Practice These</button>
+  </div>
+
+</div>
+
+<div class="nav-tabs">
+  <div class="nav-tab active" onclick="showHome()">
+    <span class="icon">🏠</span>
+    <span>Home</span>
+  </div>
+  <div class="nav-tab" onclick="showKnowledge()">
+    <span class="icon">✅</span>
+    <span>Acquired</span>
+  </div>
+  <div class="nav-tab" onclick="showRequired()">
+    <span class="icon">📚</span>
+    <span>Required</span>
+  </div>
+</div>
+
+<div class="developer-credit">
+  <img src="Picture of Sheikh Md Faysal.jpeg" class="photo" alt="Developer">
+  <div class="name">Sheikh Md Faysal</div>
+  <div class="title">This knowledge test app is developed by AmiSober</div>
+</div>
+
+<script>
+const questions = [
+{id:1,e:1,c:"Intersections",q:"When 2 roads intersect and there are no signs or signals, it is a good practice to:",o:["Blow your horn as a warning","Be ready to stop if necessary","Pull to the right hand lane and stop","Always yield to traffic on the left"],a:1},
+{id:2,e:1,c:"Parking",q:"You may not park within how many feet of a fire hydrant?",o:["10 feet","50 feet","25 feet","20 feet"],a:0},
+{id:3,e:1,c:"Turning",q:"When making a left turn from a two-way road onto a 4 lane highway, the proper way to turn is:",o:["Approach close to the centerline","Make the turn before reaching center of intersection","Turn into the left lane going in your direction","All of the above"],a:3},
+{id:4,e:1,c:"Intersections",q:"When approaching an uncontrolled intersection you should:",o:["Always come to a full stop","Slow down and look straight ahead","Speed up to clear intersection quickly","Reduce speed and be ready to stop"],a:3},
+{id:5,e:1,c:"Lights",q:"Dim your lights to low beam when:",o:["A car is approaching or you are behind another car","Parking on an unlit highway","Entering a curve","Driving on dark roads"],a:0},
+{id:6,e:1,c:"School Buses",q:"On a two-lane road, not near a school, when a school bus has stopped with red lights flashing:",o:["You must stop","You may pass from either direction","You may pass at 10 m.p.h. or less","You may pass with caution"],a:0},
+{id:7,e:1,c:"Safety",q:"In a crash or sudden stop, seat belts may:",o:["Keep you from being thrown from the car","Keep you from hitting the windshield","Keep you from sliding off the seat","All of the above"],a:3},
+{id:8,e:1,c:"Alcohol",q:"Driving under the influence of intoxicating beverages means:",o:["Your senses or judgment are impaired by alcohol","Drinking while driving","The driver shows obvious signs of being drunk","Driving even after one drink"],a:0},
+{id:9,e:1,c:"Alcohol",q:"The greatest number of people arrested for drunk driving have been drinking:",o:["Beer","Whiskey","Wine","Mixed drinks"],a:0},
+{id:10,e:1,c:"Trucks",q:"To safely share the road with large trucks and buses, you must know:",o:["Their impact on the environment","The horsepower of your vehicle","Limitations regarding visibility, stopping distances and maneuverability","The history of the trucking industry"],a:2},
+{id:11,e:1,c:"Accident Prevention",q:"The standard accident prevention formula includes:",o:["Be alert","Be prepared","Act in time","All of the above"],a:3},
+{id:12,e:1,c:"Passing",q:"If a vehicle is passing you, you should:",o:["Slow down to make it easier for the pass","Flash lights and sound horn to warn","Continue at same speed and signal oncoming traffic","Speed up so he won't complete the pass"],a:0},
+{id:13,e:1,c:"Trucks",q:"If a large truck is stopped at a traffic light, you should:",o:["Stop as close to the rear as possible","Go around on the right","Blow your horn","Stop with enough distance to avoid blind spots and see the driver's mirror"],a:3},
+{id:14,e:1,c:"GDL",q:"If under 21 and driving with 0.01% BAC, you face:",o:["30-90 day license suspension","15-30 days community service","Intoxicated driver resource center participation","All of the above"],a:3},
+{id:15,e:1,c:"Vehicle Equipment",q:"In NJ, studded snow tires can be legally used between:",o:["April 1st and December 15th","September 30th and May 30th","November 15th and April 1st","October 15th and March 15th"],a:2},
+{id:16,e:1,c:"Alcohol",q:"The best way to reduce alcohol-related accident risk is to:",o:["Reduce your drinking","Have a meal before drinking","Not drive at all after drinking","Know your own limits"],a:2},
+{id:17,e:1,c:"Hand Signals",q:"A hand signal with hand and arm upward means:",o:["U-Turn","Slow-Stop","Left-Turn","Right-Turn"],a:3},
+{id:18,e:1,c:"Curves",q:"The best way to take a curve is:",o:["Slow down before entering","Speed up while in the curve","Lean in the direction of the curve","Slow down after entering"],a:0},
+{id:19,e:1,c:"GDL",q:"Who is required by GDL law to wear a seat belt?",o:["The driver and all passengers","The driver and front seat passenger","The driver and supervising driver","The driver only"],a:0},
+{id:20,e:1,c:"Weather",q:"Road surfaces are most slippery:",o:["During very hot, humid weather","During the first few minutes of rainfall","After a very heavy rainfall","During very cold, dry weather"],a:1},
+{id:21,e:1,c:"Intersections",q:"You should always yield to:",o:["Emergency vehicles","Pedestrians","Other vehicles already in the intersection","All of the above"],a:3},
+{id:22,e:1,c:"License",q:"Altering a driver's license may result in:",o:["A fine of up to $1,000","Up to 6 months imprisonment","Loss of driving privilege","All of the above"],a:3},
+{id:23,e:1,c:"Alcohol",q:"Which drink has the highest alcohol content?",o:["5 oz table wine","1½ oz whiskey","12 oz beer","All are about equal"],a:3},
+{id:24,e:1,c:"Trucks",q:"In adverse weather, a truck's stopping distance increases by:",o:["100% more","50% more","25% more","70% more"],a:2},
+{id:25,e:1,c:"Speed Limits",q:"NJ speed limit in a business/residential area (unless posted) is:",o:["30 m.p.h.","25 m.p.h.","20 m.p.h.","35 m.p.h."],a:1},
+{id:26,e:1,c:"Curves",q:"To regain control in a skid, you should:",o:["Keep a tight grip on the wheel","Turn in the same direction the back is skidding","Turn in the opposite direction","Make a fast turn and lock brakes"],a:1},
+{id:27,e:1,c:"License",q:"You can't take a road test with obstructions between driver and examiner because:",o:["Examiner cannot reach the brakes","Obstruction is illegal","Console takes up too much space","Examiner cannot observe your feet"],a:0},
+{id:28,e:1,c:"Cell Phone",q:"NJ motorists may use hand-held phones while driving only for:",o:["Fire","Traffic accidents","Medical emergency","All of the above"],a:3},
+{id:29,e:1,c:"Signs",q:"Traffic light colors from top to bottom:",o:["Red, yellow, green","Red, green, yellow","Green, yellow, green","Yellow, green, red"],a:0},
+{id:30,e:1,c:"Lights",q:"High beam lights are used for:",o:["City streets without lamps","Signaling emergencies","Foggy weather","Open country driving"],a:3},
+{id:31,e:1,c:"GDL",q:"Passengers allowed with a GDL Special Learners Permit holder:",o:["0","Shared residence passengers plus 1 additional","2","None of the above"],a:1},
+{id:32,e:1,c:"GDL",q:"Provisional License holder (under 21) may have how many non-household members?",o:["3 or more","2","1","0"],a:2},
+{id:33,e:1,c:"Parking",q:"You cannot park within how many feet of a crosswalk?",o:["25 feet","10 feet","20 feet","50 feet"],a:0},
+{id:34,e:1,c:"GDL",q:"GDL Student Learner's Permit holder needs what for a Provisional License:",o:["Pass road test","Attain 17 years of age","6 month minimum supervised driving","A, B and C"],a:3},
+{id:35,e:1,c:"Railroad",q:"At a railroad crossing with flashing lights you must:",o:["Stop at the crossing","Slow down and look both ways","Slow down, blow horn, proceed with caution","All of the above"],a:0},
+{id:36,e:1,c:"Turning",q:"When making a left turn from a two-way road, get close to the:",o:["Line nearest to the center","Left lane nearest to left curb","Right lane, furthest from center","Right lane, nearest to right curb"],a:0},
+{id:37,e:1,c:"GDL",q:"Provisional License holders cannot use while driving:",o:["Hand held electronic devices","Hand held video game","Cell phones","All of the above"],a:3},
+{id:38,e:1,c:"GDL",q:"Fine for violating GDL conditions:",o:["No fine","$500","$100","$250"],a:2},
+{id:39,e:1,c:"Hand Signals",q:"Hand signal with hand and arm downward means:",o:["Right-turn","U-turn","Left-turn","Slow or stop"],a:3},
+{id:40,e:1,c:"Alcohol",q:"BAC rising above legal limits depends on:",o:["Amount you drink","Your weight","Time you take to drink","All of the above"],a:3},
+{id:41,e:1,c:"Turning",q:"NJ law permits right turn on red after:",o:["Making a full stop and checking traffic","Blowing your horn","Slowing down to check traffic","Checking traffic to your right"],a:0},
+{id:42,e:1,c:"Turning",q:"NJ requires you to keep right except:",o:["When impractical to travel on that side","When passing","When on a one-way street","All of the above"],a:3},
+{id:43,e:1,c:"Insurance",q:"Which convictions result in an Insurance Surcharge:",o:["DUI","DUI and Refusal to Take Breathalyzer","Refusal to Take Breathalyzer","All of the above"],a:3},
+{id:44,e:1,c:"Curves",q:"If you go into a skid you should:",o:["Straighten your wheels","Make a fast turn","Apply your brakes","Take your foot off the gas pedal"],a:3},
+{id:45,e:1,c:"Trucks",q:"When sharing road with large trucks or buses:",o:["Give more roadway for wide turns","Leave more space when stopping behind","Maintain consistent speed when passing","All of the above"],a:3},
+{id:46,e:1,c:"Alcohol",q:"3rd DUI conviction results in:",o:["Interlock device OR suspension of registrations","Interlock device AND suspension of registrations","Suspension of driving privilege","A and C"],a:2},
+{id:47,e:1,c:"Lights",q:"Before turning, signal at least:",o:["500 feet in advance","100 feet in advance","100 yards in advance","1 block in advance"],a:1},
+{id:48,e:1,c:"GDL",q:"GDL Examination Permit (21+) requires supervised driving for:",o:["Minimum 3 months","No supervision required","Minimum 9 months","Minimum 6 months"],a:0},
+{id:49,e:1,c:"Safe Driving",q:"If angry or excited while driving, you should:",o:["Give yourself time to cool off","Blow your horn to warn others","Drive with your radio on","None of the above"],a:0},
+{id:50,e:1,c:"GDL",q:"GDL Special Learner's permit holder must not drive between:",o:["12:01 AM and 5:00 AM","11:01 PM and 5:00 AM","11:01 PM and 6:00 AM","No restrictions apply"],a:1},
+{id:51,e:2,c:"Signs",q:"A triangular shaped sign is a:",o:["Yield sign","Warning sign","Railroad sign","Stop sign"],a:0},
+{id:52,e:2,c:"GDL",q:"A student permit holder must have while driving:",o:["Adult supervising driver in front seat","Their student permit","Registration and insurance ID card","All of the above"],a:3},
+{id:53,e:2,c:"Cell Phone",q:"NJ motorists may use hand-held phones while driving only for:",o:["Fire","Traffic accidents","Medical emergency","All of the above"],a:3},
+{id:54,e:2,c:"Intersections",q:"At an uncontrolled intersection you should:",o:["Speed up to clear quickly","Slow down and look straight ahead","Reduce speed and be ready to stop","Always come to a full stop"],a:2},
+{id:55,e:2,c:"Road Markings",q:"Two centerlines (1 solid, 1 broken) means:",o:["Passing permitted only on broken line side","Passing permitted on either side","Passing permitted on both sides when clear","Passing not permitted on either side"],a:0},
+{id:56,e:2,c:"Weather",q:"Road surfaces are most slippery:",o:["During very hot weather","During very cold, dry weather","After a very heavy rainfall","During the first few minutes of rainfall"],a:3},
+{id:57,e:2,c:"Points",q:"NJ allows up to 3 points subtracted if no moving violation for:",o:["2 years from last violation","6 months from last violation","1 year from last violation","18 months from last violation"],a:2},
+{id:58,e:2,c:"Trucks",q:"If a truck driver can't see you in rearview mirrors, you are:",o:["In the truck's no-zone or blind spot","Driving too slowly","Uninteresting to him","Driving a compact car"],a:0},
+{id:59,e:2,c:"Road Markings",q:"A solid white line across an intersection means:",o:["No parking zone","Bus stop","No passing","Stop behind the line for traffic sign or light"],a:3},
+{id:60,e:2,c:"Curves",q:"The best way to take a curve is:",o:["Speed up while in the curve","Lean in the direction","Slow down before entering","Slow down after entering"],a:2},
+{id:61,e:2,c:"Signs",q:"At a steady yellow traffic signal, you should:",o:["Stop immediately","Slow down and continue with caution","Stop before entering if you safely can","Speed up before it turns red"],a:2},
+{id:62,e:2,c:"Alcohol",q:"A 12-oz beer has as much alcohol as:",o:["A bottle of rum","2 martinis","1½ oz of 86 proof whiskey","A pint of brandy"],a:2},
+{id:63,e:2,c:"Railroad",q:"At a railroad crossing with flashing lights you must:",o:["Stop at the crossing","Slow down and look both ways","Slow down, blow horn, proceed with caution","All of the above"],a:0},
+{id:64,e:2,c:"Trucks",q:"To safely share road with trucks, you must know:",o:["Horsepower of your vehicle","History of trucking industry","Limitations of visibility, stopping distances, maneuverability","Impact on the environment"],a:2},
+{id:65,e:2,c:"License",q:"Getting a license illegally may result in:",o:["6 months imprisonment","$200-$500 fine and/or 30-90 days imprisonment","A court trial","$25-$100 fine"],a:1},
+{id:66,e:2,c:"Trucks",q:"In adverse weather, a truck's stopping increase can be:",o:["70% more","25% more","50% more","100% more"],a:1},
+{id:67,e:2,c:"GDL",q:"If under 21, you may be under the influence if BAC is:",o:["More than .10% but less than .15%","More than .05% but less than .10%","More than .01% but less than .05%","All of the above"],a:3},
+{id:68,e:2,c:"GDL",q:"A GDL Permit supervising driver must:",o:["Be 21 years or older","Be NJ licensed","Be licensed for minimum 3 years","A, B, and C"],a:3},
+{id:69,e:2,c:"GDL",q:"GDL permit holder (21+) driving hour restrictions:",o:["6:01AM to midnight","No restrictions apply","5:01AM to midnight","5:01AM to 11:00PM"],a:1},
+{id:70,e:2,c:"GDL",q:"GDL Special Learner's permit holder must not drive between:",o:["11:01PM and 6:00AM","11:01PM and 5:00AM","No restrictions apply","12:01AM and 5:00AM"],a:1},
+{id:71,e:2,c:"Safety",q:"A child must be in a restraint device if:",o:["Under 5 and in front seat","Under 18 months and in front seat","Under 18 months and in back seat","All of the above"],a:3},
+{id:72,e:2,c:"Parking",q:"You may not park within how many feet of a fire hydrant?",o:["50 feet","25 feet","20 feet","10 feet"],a:3},
+{id:73,e:2,c:"GDL",q:"Passengers allowed with GDL Special Learners Permit:",o:["0","Shared residence passengers plus 1 additional","2","None of the above"],a:1},
+{id:74,e:2,c:"Safe Driving",q:"In city driving, a good habit is to:",o:["Use the 2 second rule","Reduce speed and use horn","Look 12 seconds ahead","Practice good judgment"],a:2},
+{id:75,e:2,c:"Following Distance",q:"The '2 second rule' helps you:",o:["Drive within the speed limit","Bring car out of a skid","Time traffic lights","Keep a safe following distance"],a:3},
+{id:76,e:2,c:"Alcohol",q:"At BAC slightly above .05%, accident risk is:",o:["No different","Triple","Double","None of the above"],a:2},
+{id:77,e:2,c:"Trucks",q:"If a truck is stopped at a light, you should:",o:["Blow your horn","Go around on the right","Stop with enough distance to avoid blind spots","Stop as close to the rear as possible"],a:2},
+{id:78,e:2,c:"Turning",q:"When legal to turn right on red, you must first:",o:["Slow down and check traffic","Make a full stop and check traffic","Blow your horn","Check traffic to right"],a:1},
+{id:79,e:2,c:"Alcohol",q:"At .10% BAC, accident risk increases to:",o:["4 times","10 times","6 times","3 times"],a:2},
+{id:80,e:2,c:"Alcohol",q:"What can sober up a drinking person?",o:["Fresh air","Strong black coffee","Time","A cold shower"],a:2},
+{id:81,e:2,c:"Safe Driving",q:"The best way to 'talk' to other drivers is to:",o:["Be courteous and wave","Use your horn and lights","Roll down window and yell","All of the above"],a:1},
+{id:82,e:2,c:"License",q:"If you sell your car, license plates should be:",o:["Given to a friend","Kept as a souvenir","Turned into a MV inspection facility","Thrown away"],a:2},
+{id:83,e:2,c:"Safe Driving",q:"In city driving you should:",o:["Drive more slowly","Watch for pedestrians","Look at least 12 seconds ahead","All of the above"],a:3},
+{id:84,e:2,c:"GDL",q:"Provisional License holders can't use while driving:",o:["Hand held electronic devices","Hand held video game","Cell phones","All of the above"],a:3},
+{id:85,e:2,c:"GDL",q:"Provisional License holder (under 21) may drive unsupervised when:",o:["6 months supervised driving","Pass a road test","Pass road test after 6 months, excluding suspensions","Pass road test after 6 months supervised driving"],a:2},
+{id:86,e:2,c:"Intersections",q:"You should always yield to:",o:["Emergency vehicles","Pedestrians","Vehicles already in the intersection","All of the above"],a:3},
+{id:87,e:2,c:"Vehicle Equipment",q:"Studded snow tires legal in NJ between:",o:["September 30th and May 30th","October 15th and March 15th","April 1st and December 15th","November 15th and April 1st"],a:3},
+{id:88,e:2,c:"Parking",q:"Parking uphill with curb on right, wheels should be:",o:["Turned away from the curb","Turned straight ahead","Turned to the right","Turned toward the curb"],a:0},
+{id:89,e:2,c:"License",q:"Altering a license may result in:",o:["Fine up to $1000","Up to 6 months imprisonment","Loss of driving privilege","All of the above"],a:3},
+{id:90,e:2,c:"GDL",q:"GDL Exam Permit or Provisional (under 21) driving hours:",o:["5:01AM to 11:00PM","5:01 AM to midnight","6:01 AM to midnight","No restrictions"],a:1},
+{id:91,e:2,c:"Alcohol",q:"If someone gets drunk at your home and has an accident, you could:",o:["Be charged with a crime","Not be held responsible","Become involved in a lawsuit","None of the above"],a:2},
+{id:92,e:2,c:"GDL",q:"A provisional driver is provisional for:",o:["4 years","1 year","6 months","3 months"],a:1},
+{id:93,e:2,c:"Parking",q:"Parking downhill with curb on right, wheels should be:",o:["Turned away from curb","Turned straight ahead","Turned toward the curb","Turned to the left"],a:2},
+{id:94,e:2,c:"Parking",q:"You cannot park:",o:["In front of a fire hydrant","In a bus stop","In front of a driveway","All of the above"],a:3},
+{id:95,e:2,c:"Road Markings",q:"Double solid lines in center of 2-way road means:",o:["Traffic should not cross from either side","'Pass with care' road","A 1-way street","A divided highway"],a:0},
+{id:96,e:2,c:"Moped",q:"A person may operate a Moped with:",o:["A valid basic license","A valid motorcycle license","A valid moped license","Any of the above"],a:3},
+{id:97,e:2,c:"Safe Driving",q:"If angry or excited, you should:",o:["Give yourself time to cool off","Blow your horn to warn others","Drive with your radio on","None of the above"],a:0},
+{id:98,e:2,c:"Alcohol",q:"Best way to reduce alcohol-related accidents:",o:["Not drive at all after drinking","Know your own limits","Reduce your drinking","Have a meal before drinking"],a:0},
+{id:99,e:2,c:"Turning",q:"Left turn from two-way road onto 4-lane highway:",o:["Approach close to centerline","Turn before reaching center","Turn into the left lane going your direction","All of the above"],a:3},
+{id:100,e:2,c:"Curves",q:"If you go into a skid:",o:["Take your foot off the gas","Straighten your wheels","Apply your brakes","Make a fast turn"],a:0},
+{id:101,e:3,c:"Safety",q:"A child must be in a restraint device if:",o:["Under 5 and in front seat","Under 18 months and in front seat","Under 18 months and in back seat","All of the above"],a:3},
+{id:102,e:3,c:"Signs",q:"A Railroad Crossing Sign is:",o:["Black and Red (Triangle)","White and Blue (Square)","Black and Yellow (Circle)","Green and White (Diamond)"],a:2},
+{id:103,e:3,c:"Trucks",q:"When sharing road with trucks or buses, you should:",o:["Give more roadway for wide turns","Leave more space stopping behind","Maintain consistent speed when passing","All of the above"],a:3},
+{id:104,e:3,c:"Safe Driving",q:"If wheels drift onto dirt shoulder, to return to pavement you should:",o:["Drive to an acceleration lane","Drive along shoulder until matching traffic speed","Move slowly and wave traffic around","Slow down, turn back onto pavement slowly"],a:3},
+{id:105,e:3,c:"License",q:"At your Road Test, you must present:",o:["Valid vehicle registration","Valid examination permit","Valid insurance ID card","All of the above"],a:3},
+{id:106,e:3,c:"Signs",q:"A green light means:",o:["Be ready to stop","Slow down","Slow before intersection","Go when safe"],a:3},
+{id:107,e:3,c:"Emergency",q:"If you have a flat tire or blowout:",o:["Grip the wheel firmly","Let up on the gas pedal","Let car coast to a stop","All of the above"],a:3},
+{id:108,e:3,c:"Parking",q:"You may not park within how many feet of a fire hydrant?",o:["10 feet","50 feet","20 feet","25 feet"],a:0},
+{id:109,e:3,c:"Safe Driving",q:"If angry or excited, you should:",o:["Give yourself time to cool off","Blow your horn to warn others","Drive with your radio on","None of the above"],a:0},
+{id:110,e:3,c:"Curves",q:"When driving around a curve, your vehicle may tend to:",o:["Keep going straight","Slow down","Follow the curve","Speed up"],a:0},
+{id:111,e:3,c:"Road Markings",q:"Two centerlines (1 solid, 1 broken):",o:["Passing not permitted on either side","Passing only on the broken line side","Passing on either side","Passing on both sides when clear"],a:1},
+{id:112,e:3,c:"Railroad",q:"At a railroad crossing with flashing lights:",o:["Stop at the crossing","Slow down and look both ways","Slow down, blow horn, proceed with caution","All of the above"],a:0},
+{id:113,e:3,c:"Trucks",q:"In adverse weather, truck stopping increase can be:",o:["70% more","100% more","25% more","50% more"],a:2},
+{id:114,e:3,c:"Lights",q:"Dim your lights to low beam when:",o:["Driving on dark roads","Parking on unlit highway","Entering a curve","A car is approaching or you're behind another car"],a:3},
+{id:115,e:3,c:"License",q:"Address change must be reported to MVC within:",o:["1 week","6 weeks","2 months","2 weeks"],a:0},
+{id:116,e:3,c:"Safe Driving",q:"To avoid highway hypnosis:",o:["Look straight ahead to the side","Spend equal time looking at mirrors and front","Rest eyes by slowly blinking","Avoid looking at one thing for more than a few seconds"],a:3},
+{id:117,e:3,c:"Weather",q:"When hydroplaning, you should:",o:["Push brake pedal hard","Increase speed","Change lanes","Slow down"],a:3},
+{id:118,e:3,c:"Moped",q:"A person may operate a Moped with:",o:["A valid basic license","A valid motorcycle license","A valid moped license","Any of the above"],a:3},
+{id:119,e:3,c:"GDL",q:"GDL Special Learner's permit holder must not drive between:",o:["No restrictions","12:01 AM and 5:00 AM","11:01 PM and 5:00 AM","11:01 PM and 6:00 AM"],a:2},
+{id:120,e:3,c:"GDL",q:"Under 21, you may be under the influence if BAC is:",o:["More than .10% but less than .15%","More than .05% but less than .10%","More than .01% but less than .05%","All of the above"],a:3},
+{id:121,e:3,c:"Alcohol",q:"A 12-oz beer has as much alcohol as:",o:["A pint of brandy","2 martinis","1½ oz of 86 proof whiskey","A bottle of rum"],a:2},
+{id:122,e:3,c:"License",q:"Moving to NJ, vehicle must be inspected within:",o:["90 days after registering","2 months after registering","6 months after registering","14 days after registering"],a:3},
+{id:123,e:3,c:"Emergency Vehicles",q:"When you see/hear emergency vehicles with sirens and lights:",o:["Speed up and stay 100 feet ahead","Slow up and let them pass","Pull over to extreme right and stop","Follow and offer assistance"],a:2},
+{id:124,e:3,c:"Accident Prevention",q:"Standard accident prevention formula:",o:["Be alert","Be prepared","Act in time","All of the above"],a:3},
+{id:125,e:3,c:"GDL",q:"GDL Student Learner's Permit holder needs for Provisional License:",o:["Pass road test","Attain 17 years","6 month minimum supervised driving","A, B and C"],a:3},
+{id:126,e:3,c:"Speed Limits",q:"School zone speed limit (unless posted):",o:["25 m.p.h.","15 m.p.h.","10 m.p.h.","35 m.p.h."],a:0},
+{id:127,e:3,c:"GDL",q:"GDL Exam Permit (21+) supervised driving required:",o:["Minimum 6 months","Minimum 9 months","Minimum 3 months","No supervision required"],a:2},
+{id:128,e:3,c:"Alcohol",q:"If 21+, you may/may not be under influence if BAC is:",o:["More than .10% but less than .15%","More than .15% but less than .20%","More than .05% but less than .08%","All of the above"],a:2},
+{id:129,e:3,c:"Signs",q:"A yield sign shape is:",o:["Circle in square","Triangle","Eight-sided","Diamond"],a:1},
+{id:130,e:3,c:"GDL",q:"Provisional License holder (under 21) may drive unsupervised when:",o:["Pass road test after 6 months supervised","6 months supervised driving","Pass road test after 6 months, excluding suspensions","Pass a road test"],a:2},
+{id:131,e:3,c:"Lights",q:"Signals should be used:",o:["When changing lanes","When turning","When slowing down","All of the above"],a:3},
+{id:132,e:3,c:"GDL",q:"GDL Exam Permit/Provisional (under 21) driving hours:",o:["No restrictions","5:01AM to 11:00 PM","6:01 AM to midnight","5:01 AM to midnight"],a:3},
+{id:133,e:3,c:"School Buses",q:"On a two-lane road (not near school), school bus stopped with red lights flashing:",o:["You must stop","You may pass with caution","You may pass from either direction","You may pass at 10 mph or less"],a:0},
+{id:134,e:3,c:"Alcohol",q:"What sobers up a drinking person?",o:["A cold shower","Time","Strong black coffee","Fresh air"],a:1},
+{id:135,e:3,c:"GDL",q:"A GDL Permit supervising driver must:",o:["Be 21 or older","Be NJ licensed","Be licensed minimum 3 years","A, B, and C"],a:3},
+{id:136,e:3,c:"Trucks",q:"To safely share road with trucks, know:",o:["Limitations of visibility, stopping, maneuverability","Trucking industry history","Horsepower of your vehicle","Impact on environment"],a:0},
+{id:137,e:3,c:"Emergency",q:"If you have a tire blowout:",o:["Apply your brakes","Continue at regular speed until safe","Slow down gradually","Turn off the road quickly"],a:2},
+{id:138,e:3,c:"Turning",q:"NJ requires you to keep right except:",o:["When impractical to travel on that side","When passing","When on a one-way street","All of the above"],a:3},
+{id:139,e:3,c:"GDL",q:"GDL Special Learner's Permit holder eligible for basic license at:",o:["17, with passing road test","18","18, with completion of Provisional requirements","17, with one year supervised and road test"],a:2},
+{id:140,e:3,c:"Weather",q:"Provisional driver, daytime rain, must have:",o:["Wipers on","Headlights on","Both A & B","Defrosters only"],a:2},
+{id:141,e:3,c:"License",q:"Altering a license may result in:",o:["Fine up to $1,000","Up to 6 months imprisonment","Loss of driving privilege","All of the above"],a:3},
+{id:142,e:3,c:"Signs",q:"A diamond shaped sign is a:",o:["Yield sign","Stop sign","Warning sign","Railroad sign"],a:2},
+{id:143,e:3,c:"Alcohol",q:"At BAC slightly above .05%, accident risk is:",o:["No different","Triple","Double","None of the above"],a:2},
+{id:144,e:3,c:"Parking",q:"Parking downhill with curb on right, wheels should be:",o:["Turned to the left","Turned straight ahead","Turned toward the curb","Turned away from curb"],a:2},
+{id:145,e:3,c:"Highway",q:"A deceleration lane is:",o:["The passing lane","An extra lane at a highway exit","For slow drivers only","For fast drivers only"],a:1},
+{id:146,e:3,c:"Alcohol",q:"If someone gets drunk at your home and has accident:",o:["Be charged with a crime","Not be held responsible","Become involved in a lawsuit","None of the above"],a:2},
+{id:147,e:3,c:"GDL",q:"Provisional License holders can't use while driving:",o:["Hand held electronic devices","Hand held video game","Cell phones","All of the above"],a:3},
+{id:148,e:3,c:"Safe Driving",q:"Best way to 'talk' to other drivers:",o:["Be courteous and wave","Use your horn and lights","Roll down window and yell","All of the above"],a:1},
+{id:149,e:3,c:"Trucks",q:"If a truck is stopped at a light, you should:",o:["Go around on the right","Stop as close to rear as possible","Blow your horn","Stop with enough distance to avoid blind spots"],a:3},
+{id:150,e:3,c:"Alcohol",q:"Best way to reduce alcohol-related accidents:",o:["Not drive at all after drinking","Reduce drinking","Know your own limits","Have a meal before drinking"],a:0},
+{id:151,e:4,c:"Intersections",q:"You should always yield to:",o:["Emergency vehicles","Pedestrians","Vehicles already in the intersection","All of the above"],a:3},
+{id:152,e:4,c:"Signs",q:"An eight-sided sign means:",o:["Yield to other traffic","Stop","Slow down","Railroad crossing"],a:1},
+{id:153,e:4,c:"Speed Limits",q:"School zone speed limit (unless posted):",o:["25 m.p.h.","10 m.p.h.","15 m.p.h.","35 m.p.h."],a:0},
+{id:154,e:4,c:"Hand Signals",q:"Hand signal with hand and arm downward means:",o:["U-turn","Left-turn","Right-turn","Slow or stop"],a:3},
+{id:155,e:4,c:"Highway",q:"If you miss your exit on an expressway:",o:["Go on to the next exit","Slow down and stop","Turn around and go back","Pull off and back up the shoulder"],a:0},
+{id:156,e:4,c:"Curves",q:"When driving around a curve, your vehicle may tend to:",o:["Speed up","Follow the curve","Slow down","Keep going straight"],a:3},
+{id:157,e:4,c:"Trucks",q:"If a truck is stopped at a light, you should:",o:["Go around on the right","Blow your horn","Stop as close to the rear as possible","Stop with enough distance to avoid blind spots"],a:3},
+{id:158,e:4,c:"GDL",q:"GDL Exam Permit/Provisional (under 21) driving hours:",o:["5:01AM to 11:00PM","5:01 AM to midnight","No restrictions","6:01 AM to midnight"],a:1},
+{id:159,e:4,c:"Road Markings",q:"A solid white line at an intersection means:",o:["Stop behind the line for traffic sign or light","No parking zone","Bus stop","No passing"],a:0},
+{id:160,e:4,c:"Following Distance",q:"A space cushion gives you:",o:["Time to react","A clear view of the road","Decreased reaction time","None of the above"],a:0},
+{id:161,e:4,c:"Lights",q:"At night, be sure you can stop:",o:["Within 20 feet at all times","Within 20 feet at 30 mph","Within 20 feet at 40 mph","Within the distance you can see ahead"],a:3},
+{id:162,e:4,c:"Trucks",q:"To safely share road with trucks, know:",o:["Impact on environment","Trucking industry history","Limitations of visibility, stopping, maneuverability","Horsepower of your vehicle"],a:2},
+{id:163,e:4,c:"Cell Phone",q:"NJ motorists may use hand-held phones only for:",o:["Fire","Traffic accidents","Medical emergency","All of the above"],a:3},
+{id:164,e:4,c:"Trucks",q:"When passing a truck, remember:",o:["Name of owner on the side","Several no-zones (blind spots) where driver can't see you","The 'two-second' rule","All of the above"],a:1},
+{id:165,e:4,c:"Moped",q:"A Moped can be operated with:",o:["A valid basic license","A valid motorcycle license","A valid moped license","Any of the above"],a:3},
+{id:166,e:4,c:"Hand Signals",q:"Hand signal with hand and arm upward means:",o:["Left-Turn","Right-Turn","U-Turn","Slow-Stop"],a:1},
+{id:167,e:4,c:"Alcohol",q:"If someone gets drunk at your home and has accident:",o:["Be charged with a crime","Not be held responsible","Become involved in a lawsuit","None of the above"],a:2},
+{id:168,e:4,c:"Lights",q:"Before turning, signal at least:",o:["1 block in advance","100 feet in advance","500 feet in advance","100 yards in advance"],a:1},
+{id:169,e:4,c:"Points",q:"After license returned from suspension, probation is:",o:["Two years","One year","6 months","9 months"],a:1},
+{id:170,e:4,c:"Alcohol",q:"1½ oz of 86 proof whiskey equals:",o:["A 6-pack of beer","6 oz premium beer","A bottle of wine","12 ounces of beer"],a:3},
+{id:171,e:4,c:"Safety",q:"A child must be in a restraint device if:",o:["Under 5 and in front seat","Under 18 months and in front seat","Under 18 months and in back seat","All of the above"],a:3},
+{id:172,e:4,c:"Curves",q:"To regain control in a skid:",o:["Fast turn in skid direction and lock brakes","Turn opposite direction of back skidding","Turn same direction as back of car is skidding","Keep tight grip on wheel"],a:2},
+{id:173,e:4,c:"Alcohol",q:"Which drink has highest alcohol content?",o:["5 oz table wine","1½ oz whiskey","12 oz beer","All are about equal"],a:3},
+{id:174,e:4,c:"GDL",q:"Provisional driver is provisional for:",o:["1 year","3 months","4 years","6 months"],a:0},
+{id:175,e:4,c:"Alcohol",q:"You're legally under the influence at BAC of:",o:[".01%",".05%",".08%","None of the above"],a:2},
+{id:176,e:4,c:"GDL",q:"GDL law requires remedial training for:",o:["4+ points","2+ points","DUI conviction","A and C"],a:3},
+{id:177,e:4,c:"Alcohol",q:"Implied Consent Law means:",o:["Must have liability insurance","Sign agreement to give blood","Permission for another to move car","Automatically agree to breath test after DUI arrest"],a:3},
+{id:178,e:4,c:"Road Markings",q:"Two centerlines (1 solid, 1 broken):",o:["Passing on both sides when clear","Passing not permitted on either side","Passing only on the broken line side","Passing on either side"],a:2},
+{id:179,e:4,c:"Insurance",q:"Every NJ registered vehicle must be insured for:",o:["Theft","Fire damage","Liability","Collision"],a:2},
+{id:180,e:4,c:"Passing",q:"You may pass on the right when:",o:["Driver ahead is turning left and there's a proper lane","No traffic signals","Entering an intersection","Slow moving vehicle ahead"],a:0},
+{id:181,e:4,c:"GDL",q:"Provisional License (under 21) non-household members allowed:",o:["0","1","2","3 or more"],a:1},
+{id:182,e:4,c:"License",q:"At your Road Test, you must present:",o:["Valid registration","Valid examination permit","Valid insurance ID card","All of the above"],a:3},
+{id:183,e:4,c:"Alcohol",q:"After 2-4 drinks, alcohol impairs your:",o:["Reaction time","Coordination and balance","Judgment","All of the above"],a:3},
+{id:184,e:4,c:"License",q:"Address change must be reported within:",o:["1 week","6 weeks","2 months","2 weeks"],a:0},
+{id:185,e:4,c:"Following Distance",q:"Proper following distance is at least:",o:["3/4 of a second behind","1/2 of a second behind","2 seconds behind","1 second behind"],a:2},
+{id:186,e:4,c:"Insurance",q:"Insurance Surcharge convictions include:",o:["DUI","DUI and Breathalyzer Refusal","Breathalyzer Refusal","All of the above"],a:3},
+{id:187,e:4,c:"Parking",q:"Parking uphill with curb on right, wheels should be:",o:["Turned away from curb","Turned toward curb","Turned to the right","Turned straight ahead"],a:0},
+{id:188,e:4,c:"Weather",q:"Road surfaces are most slippery:",o:["After very heavy rainfall","During first few minutes of rainfall","During very cold, dry weather","During very hot weather"],a:1},
+{id:189,e:4,c:"GDL",q:"Under 21, you may be under influence if BAC is:",o:["More than .10% but less than .15%","More than .05% but less than .10%","More than .01% but less than .05%","All of the above"],a:3},
+{id:190,e:4,c:"Railroad",q:"At a railroad crossing with flashing lights:",o:["Stop at the crossing","Slow down and look both ways","Slow down, blow horn, proceed with caution","All of the above"],a:0},
+{id:191,e:4,c:"GDL",q:"GDL Student Learner's Permit needs for Provisional License:",o:["Pass road test","Attain 17 years","6 month minimum supervised driving","A, B and C"],a:3},
+{id:192,e:4,c:"Parking",q:"Can't park within how many feet of a crosswalk?",o:["50 feet","10 feet","25 feet","20 feet"],a:2},
+{id:193,e:4,c:"GDL",q:"Fine for violating GDL conditions:",o:["No fine","$100","$500","$250"],a:1},
+{id:194,e:4,c:"License",q:"Moving to NJ, vehicle inspected within:",o:["14 days after registering","90 days after registering","6 months after registering","2 months after registering"],a:0},
+{id:195,e:4,c:"Lights",q:"High beam lights are used for:",o:["Signaling emergencies","Open country driving","City streets without lamps","Foggy weather"],a:1},
+{id:196,e:4,c:"Curves",q:"If you go into a skid:",o:["Take foot off the gas","Make a fast turn","Straighten wheels","Apply brakes"],a:0},
+{id:197,e:4,c:"Alcohol",q:"3rd DUI conviction results in:",o:["Interlock device OR suspension of registrations","Interlock device AND suspension of registrations","Suspension of driving privilege","A and C"],a:2},
+{id:198,e:4,c:"GDL",q:"GDL Exam Permit (21+) supervised driving required:",o:["Minimum 3 months","Minimum 6 months","No supervision required","Minimum 9 months"],a:0},
+{id:199,e:4,c:"Trucks",q:"If a truck driver can't see you in mirrors, you're:",o:["Driving a compact car","Driving too slowly","Uninteresting to him","In the truck's no-zone or blind spot"],a:3},
+{id:200,e:4,c:"GDL",q:"If a student driver commits an offense, responsibility is with:",o:["Neither student nor instructor","Only the student","Only the instructor","Both student and instructor"],a:3}
+];
+
+let learned = JSON.parse(localStorage.getItem('njlearned') || '{}');
+let wrongBank = JSON.parse(localStorage.getItem('njwrong') || '{}');
+let practiceProgress = JSON.parse(localStorage.getItem('njprogress') || '[]');
+let currentQuestionIndex = 0;
+let practiceQuestions = [];
+
+function save() {
+  localStorage.setItem('njlearned', JSON.stringify(learned));
+  localStorage.setItem('njwrong', JSON.stringify(wrongBank));
+  localStorage.setItem('njprogress', JSON.stringify(practiceProgress));
+}
+
+function getUnansweredQuestions() {
+  return questions.filter(q => !practiceProgress.includes(q.id));
+}
+
+function updateStats() {
+  const total = questions.length;
+  const completed = practiceProgress.length;
+  const acquired = Object.keys(learned).length;
+  const required = Object.keys(wrongBank).length;
+  const remaining = total - completed;
+
+  document.getElementById('home-count').textContent = completed + ' / ' + total;
+  document.getElementById('home-percent').textContent = Math.round(completed/total*100) + '%';
+  document.getElementById('home-bar').style.width = (completed/total*100) + '%';
+  
+  const ring = document.getElementById('home-progress-ring');
+  const circumference = 2 * Math.PI * 34;
+  ring.style.strokeDasharray = circumference;
+  ring.style.strokeDashoffset = circumference - (completed/total * circumference);
+
+  document.getElementById('stat-acquired').textContent = acquired;
+  document.getElementById('stat-required').textContent = required;
+  document.getElementById('stat-completed').textContent = completed;
+  document.getElementById('stat-remaining').textContent = remaining;
+
+  document.getElementById('acquired-count').textContent = acquired;
+  let acquiredHtml = '';
+  Object.keys(learned).forEach(id => {
+    const q = questions.find(x => x.id == id);
+    if(q) {
+      acquiredHtml += `<div class="question-item"><div class="q-text">${q.q}</div><div class="q-answer">✓ ${q.o[q.a]}</div></div>`;
+    }
+  });
+  document.getElementById('acquired-list').innerHTML = acquiredHtml || '<p style="color:#94a3b8;text-align:center;padding:20px">No questions mastered yet</p>';
+
+  document.getElementById('required-count').textContent = required;
+  let requiredHtml = '';
+  Object.keys(wrongBank).forEach(id => {
+    const q = questions.find(x => x.id == id);
+    if(q) {
+      requiredHtml += `<div class="question-item wrong"><div class="q-text">${q.q}</div><div class="q-answer">✗ ${q.o[q.a]}</div></div>`;
+    }
+  });
+  document.getElementById('required-list').innerHTML = requiredHtml || '<p style="color:#94a3b8;text-align:center;padding:20px">All questions mastered!</p>';
+}
+
+function showScreen(screenId) {
+  document.querySelectorAll('.container > div').forEach(el => {
+    el.style.display = el.id === screenId ? 'block' : 'none';
+  });
+  
+  document.querySelectorAll('.nav-tab').forEach(tab => { tab.classList.remove('active'); });
+  
+  if (screenId === 'home-screen') {
+    document.querySelectorAll('.nav-tab')[0].classList.add('active');
+    updateStats();
+  } else if (screenId === 'knowledge-screen') {
+    document.querySelectorAll('.nav-tab')[1].classList.add('active');
+    updateStats();
+  } else if (screenId === 'required-screen') {
+    document.querySelectorAll('.nav-tab')[2].classList.add('active');
+    updateStats();
+  }
+}
+
+function showHome() { showScreen('home-screen'); }
+function showKnowledge() { showScreen('knowledge-screen'); }
+function showRequired() { showScreen('required-screen'); }
+
+function startPractice() {
+  const unanswered = getUnansweredQuestions();
+  if (unanswered.length === 0) {
+    alert('You have completed all 200 questions! Great job!');
+    return;
+  }
+  practiceQuestions = unanswered;
+  currentQuestionIndex = 0;
+  showScreen('question-screen');
+  showQuestion();
+}
+
+function showQuestion() {
+  const q = practiceQuestions[currentQuestionIndex];
+  const progress = (currentQuestionIndex / practiceQuestions.length) * 100;
+  
+  document.getElementById('q-number').textContent = `Question ${currentQuestionIndex + 1} of ${practiceQuestions.length}`;
+  document.getElementById('q-progress').style.width = progress + '%';
+  document.getElementById('q-text').textContent = q.q;
+  
+  const optionsHtml = q.o.map((opt, i) => `
+    <div class="option" onclick="selectOption(${i})">
+      <span class="letter">${String.fromCharCode(65+i)}</span>
+      <span class="text">${opt}</span>
+    </div>
+  `).join('');
+  
+  document.getElementById('q-options').innerHTML = optionsHtml;
+}
+
+function selectOption(selectedIndex) {
+  const q = practiceQuestions[currentQuestionIndex];
+  const options = document.querySelectorAll('.option');
+  
+  if (!practiceProgress.includes(q.id)) { practiceProgress.push(q.id); }
+  
+  options.forEach((opt, i) => {
+    if (i === q.a) { opt.classList.add('correct'); }
+    else if (i === selectedIndex) { opt.classList.add('wrong'); }
+    opt.onclick = null;
+  });
+  
+  const explanation = getExplanation(q);
+  const optionsContainer = document.getElementById('q-options');
+  optionsContainer.innerHTML += `
+    <div class="explanation">
+      <div class="title">Explanation</div>
+      ${explanation}
+    </div>
+    <div class="nav-buttons">
+      <button class="nav-btn prev-btn" onclick="goToPrevQuestion()" ${currentQuestionIndex === 0 ? 'disabled' : ''}>⬅ Previous</button>
+      <button class="nav-btn next-btn" onclick="goToNextQuestion()">Next Question ➡</button>
+    </div>
+  `;
+  
+  if (selectedIndex === q.a) {
+    learned[q.id] = true;
+    delete wrongBank[q.id];
+  } else {
+    wrongBank[q.id] = true;
+    delete learned[q.id];
+  }
+  
+  save();
+}
+
+function getExplanation(q) {
+  const explanations = {
+    1: "When two roads intersect without signs or signals, you must be ready to stop if necessary to avoid a collision. This is a fundamental right-of-way rule - always proceed with caution at uncontrolled intersections and yield to any vehicle or pedestrian already crossing.",
+    2: "In New Jersey, you may not park within 10 feet of a fire hydrant. This allows fire fighters quick access to the hydrant in case of emergency. Violation can result in a fine.",
+    3: "When turning left from a two-way road onto a 4-lane highway, approach close to the centerline and turn into the left lane going in your direction. This ensures smooth traffic flow and prevents impeding vehicles in the right lane.",
+    4: "At uncontrolled intersections, reduce speed and be ready to stop for vehicles or pedestrians. An uncontrolled intersection has no traffic signals or signs - treat it as a 4-way stop and yield to vehicles already in the intersection.",
+    5: "Dim your lights to low beam when a car is approaching or when you are following another vehicle. High beams can blind oncoming drivers and reflect badly in rearview mirrors, causing temporary blindness and accidents.",
+    6: "On a two-lane road, you must stop when a school bus has stopped with red lights flashing. This applies whether you're approaching from behind or meeting the bus. Stop at least 25 feet away and remain stopped until the bus turns off its lights.",
+    7: "Seat belts reduce the risk of fatal injury to front-seat passengers by 45% and are the most effective safety device in vehicles. They keep you from being thrown from the car, hitting the windshield, or sliding off the seat during a crash.",
+    8: "Driving under the influence means your senses or judgment are impaired by alcohol. Even small amounts of alcohol can affect your reaction time, coordination, and decision-making abilities. NJ has strict DUI laws with severe penalties.",
+    9: "The greatest number of people arrested for drunk driving have been drinking beer. This is often because people underestimate beer alcohol content and drink more than they realize. A 12-oz beer has as much alcohol as 1.5 oz of 86-proof whiskey.",
+    10: "You must know a truck's limitations regarding visibility, stopping distances, and maneuverability. Trucks have large blind spots (no-zones) on all four sides. Never linger in these zones and always pass trucks quickly and completely.",
+    11: "The standard accident prevention formula includes being alert (watching the road), being prepared (expecting hazards), and acting in time (reacting quickly). Defensive driving means always being ready for the unexpected.",
+    12: "If a vehicle is passing you, slow down to make it easier for them to complete the pass. Speeding up or blocking another driver can cause road rage incidents and accidents.",
+    13: "Stop with enough distance to avoid the truck's blind spots and see the driver's mirror. If you can't see the trucker's mirrors, they can't see you. Stay back at least 20-25 feet at traffic lights.",
+    14: "If under 21 and driving with 0.01% BAC, you face 30-90 day license suspension plus other penalties. NJ has a zero-tolerance policy for under-21 drivers - even trace amounts of alcohol can result in severe consequences.",
+    15: "Studded snow tires can be legally used in NJ between November 15th and April 1st. These tires provide better traction on ice and snow but can damage dry pavement, hence the restricted season.",
+    16: "The best way to reduce alcohol-related accident risk is not to drive at all after drinking. If you plan to drink, arrange for a designated driver, use public transportation, or call a taxi/rideshare service.",
+    17: "A hand signal with hand and arm upward means right turn. This is used when your vehicle's turn signals are not working. The arm points in the direction you're planning to turn.",
+    18: "The best way to take a curve is to slow down before entering it. Speed inside the curve can cause your vehicle to skid. Accelerate gently after you've straightened out.",
+    19: "GDL law requires the driver and all passengers to wear seat belts, regardless of age or seating position. This is mandatory for both the driver and all occupants in NJ.",
+    20: "Road surfaces are most slippery during the first few minutes of rainfall. Oil and debris float on the water, creating a slick surface. Drive extra carefully when rain first starts.",
+    21: "You should always yield to emergency vehicles (with sirens/blinking lights), pedestrians, and other vehicles already in the intersection. Failure to yield can result in serious accidents and traffic violations.",
+    22: "Altering a driver's license may result in a fine up to $1,000, up to 6 months imprisonment, and loss of driving privilege. Never modify your license in any way.",
+    23: "All drinks (5 oz wine, 1½ oz whiskey, 12 oz beer) contain about the same amount of alcohol. This is called a 'standard drink.' The alcohol content varies but the amount of pure alcohol is roughly equal.",
+    24: "In adverse weather, a truck's stopping distance increases by 25% more. Wet roads double normal stopping distances, and icy roads can increase it by 4-10 times. Always give trucks extra space in bad weather.",
+    25: "NJ speed limit in a business/residential area (unless posted) is 25 m.p.h. This speed allows drivers enough time to react to pedestrians, parked cars, and unexpected obstacles.",
+    26: "To regain control in a skid, turn in the same direction the back of the car is skidding. This is called 'steering into the skid.' Avoid slamming on brakes - that makes skidding worse.",
+    27: "You can't take a road test with obstructions because the examiner cannot reach the brakes in an emergency. Remove any items blocking access to brakes, steering, or mirrors.",
+    28: "NJ motorists may use hand-held phones while driving only for fire, traffic accidents, or medical emergency. All other hand-held phone use is illegal. Use hands-free devices instead.",
+    29: "Traffic light colors from top to bottom are: Red (stop), Yellow (prepare to stop), Green (go). Vertical traffic signals follow this universal standard.",
+    30: "High beam lights are used for open country driving where there are no oncoming vehicles. They illuminate the road up to 350 feet ahead. Always switch to low beams within 500 feet of oncoming traffic.",
+    31: "GDL Special Learners Permit holder can have shared residence passengers plus 1 additional. This restriction helps minimize distractions for new drivers. Only household members plus one other passenger are allowed.",
+    32: "Provisional License holder (under 21) may have 1 non-household member. This limit reduces distraction and the risk of accidents for new young drivers.",
+    33: "You cannot park within 25 feet of a crosswalk. This ensures pedestrians have clear visibility when crossing and drivers can see them approaching.",
+    34: "GDL Student Learner's Permit holder needs to pass road test, attain 17 years, and have 6 month minimum supervised driving before getting a provisional license. All requirements must be met.",
+    35: "At a railroad crossing with flashing lights, you must stop at the crossing. Never proceed until lights stop flashing. Trains can approach at any time and cannot stop quickly.",
+    36: "When making a left turn from a two-way road, get close to the line nearest to the center. This positioning gives you the best visibility and allows for a safe turn into the correct lane.",
+    37: "Provisional License holders cannot use hand held electronic devices, hand held video games, or cell phones while driving. This includes talking, texting, or any hand-held device usage.",
+    38: "Fine for violating GDL conditions is $100. Additional penalties may include license suspension. Common violations include using cell phones, having too many passengers, or driving during restricted hours.",
+    39: "Hand signal with hand and arm downward means slow or stop. Extend your arm downward with palm facing back to indicate you're slowing down or stopping.",
+    40: "BAC rising above legal limits depends on amount you drink, your weight, and time you take to drink. Everyone metabolizes alcohol differently. The only way to lower BAC is time.",
+    41: "NJ law permits right turn on red after making a full stop and checking traffic. This is allowed unless a sign specifically prohibits it. Always yield to pedestrians and cross-traffic first.",
+    42: "NJ requires you to keep right except when impractical, when passing, or when on a one-way street. This keeps traffic flowing smoothly and prevents left-lane camping.",
+    43: "DUI and Refusal to Take Breathalyzer convictions result in an Insurance Surcharge. The NJ MVC imposes additional fees on top of court fines for these violations.",
+    44: "If you go into a skid, take your foot off the gas pedal. Removing throttle input allows wheels to regain traction. Then gently steer in the direction you want to go.",
+    45: "When sharing road with large trucks: give more roadway for wide turns (trucks need space), leave more space when stopping behind (longer stopping distance), maintain consistent speed when passing (don't slow down).",
+    46: "3rd DUI conviction results in suspension of driving privilege. Additional penalties may include vehicle forfeiture and mandatory ignition interlock device installation.",
+    47: "Before turning, signal at least 100 feet in advance. This gives other drivers and pedestrians time to react to your intended action.",
+    48: "GDL Examination Permit (21+) requires supervised driving for minimum 3 months. You must practice with a licensed driver age 21+ who has had their license for at least 3 years.",
+    49: "If angry or excited while driving, give yourself time to cool off. Strong emotions impair judgment and reaction time. Pull over safely if needed.",
+    50: "GDL Special Learner's permit holder must not drive between 11:01 PM and 5:00 AM. This nighttime restriction helps prevent late-night accidents for new drivers.",
+    51: "A triangular shaped sign is a Yield sign. It means you must slow down and give the right-of-way to other vehicles or pedestrians.",
+    52: "A student permit holder must have adult supervising driver in front seat, their student permit, and registration and insurance ID card. All documents must be present during driving.",
+    53: "NJ motorists may use hand-held phones while driving only for fire, traffic accidents, or medical emergency. All other uses result in fines. Hands-free is always safer.",
+    54: "At an uncontrolled intersection, reduce speed and be ready to stop. Treat it as a 4-way stop and yield to vehicles already in the intersection.",
+    55: "Two centerlines (1 solid, 1 broken) means passing permitted only on broken line side. The solid line indicates no passing zone on that side.",
+    56: "Road surfaces are most slippery during the first few minutes of rainfall. Water mixes with oil and creates hazardous conditions. Reduce speed in early rain.",
+    57: "NJ allows up to 3 points subtracted if no moving violation for 1 year from last violation. This encourages safe driving habits by rewarding violation-free periods.",
+    58: "If a truck driver can't see you in rearview mirrors, you are in the truck's no-zone or blind spot. These blind spots extend 20 feet in front, 200 feet behind, and along both sides.",
+    59: "A solid white line across an intersection means stop behind the line for traffic sign or light. This ensures visibility for cross-traffic and pedestrians.",
+    60: "The best way to take a curve is to slow down before entering. Entering a curve at high speed can cause understeer or skidding off the road.",
+    61: "At a steady yellow traffic signal, stop before entering if you safely can. If you're already in the intersection or stopping would cause an accident, proceed carefully.",
+    62: "A 12-oz beer has as much alcohol as 1½ oz of 86 proof whiskey. This is why drinking equivalent amounts of different beverages produces similar intoxication.",
+    63: "At a railroad crossing with flashing lights, you must stop at the crossing. Flashing red lights function exactly like a stop sign - complete stop required.",
+    64: "To safely share road with trucks, know limitations of visibility, stopping distances, and maneuverability. Never cut off a truck or linger in blind spots.",
+    65: "Getting a license illegally may result in $200-$500 fine and/or 30-90 days imprisonment. This includes using false identification or testing with fraudulent documents.",
+    66: "In adverse weather, a truck's stopping increase can be 50% more. Wet roads double stopping distance, icy roads increase it even more dramatically.",
+    67: "If under 21, you may be under the influence if BAC is more than .01%. NJ has zero-tolerance for underage drinking and driving.",
+    68: "A GDL Permit supervising driver must be 21 years or older, be NJ licensed, and be licensed for minimum 3 years. They must sit in the front passenger seat.",
+    69: "GDL permit holder (21+) has no driving hour restrictions. Unlike younger permit holders, adults have no time-of-day limitations.",
+    70: "GDL Special Learner's permit holder must not drive between 11:01 PM and 5:00 AM. Nighttime driving restrictions reduce crash risk for new drivers.",
+    71: "A child must be in a restraint device if under 18 months and in any seat. Always use appropriate car seats or boosters for children.",
+    72: "In New Jersey, you may not park within 10 feet of a fire hydrant. This law ensures fire department access in emergencies.",
+    73: "GDL Special Learners Permit allows shared residence passengers plus 1 additional. This restriction helps reduce distractions for inexperienced drivers.",
+    74: "In city driving, look at least 12 seconds ahead. This gives you time to anticipate hazards, traffic signals, and potential obstacles.",
+    75: "The '2 second rule' helps you keep a safe following distance. Pick a fixed point and count 'one thousand one, one thousand two' - you should reach that point in at least 2 seconds.",
+    76: "At BAC slightly above .05%, accident risk is double. As BAC increases, risk increases dramatically. At .08%, risk is 6 times higher.",
+    77: "If a truck is stopped at a light, stop with enough distance to avoid blind spots. If you can't see the trucker's mirrors, they can't see you.",
+    78: "When legal to turn right on red, make a full stop and check traffic first. Yield to pedestrians and vehicles in the intersection.",
+    79: "At .10% BAC, accident risk increases to 6 times. At this level, driving abilities are significantly impaired and reaction time is notably slower.",
+    80: "Only time can sober up a drinking person. Coffee, cold showers, fresh air, or exercise cannot speed up alcohol metabolism. The liver processes alcohol at about one drink per hour.",
+    81: "The best way to 'talk' to other drivers is to use your horn and lights appropriately. Use headlights to signal, horn sparingly for warnings only.",
+    82: "If you sell your car, license plates should be turned into a MV inspection facility. Plates don't transfer with the vehicle - they must be surrendered or transferred.",
+    83: "In city driving you should drive more slowly, watch for pedestrians, and look at least 12 seconds ahead. City driving requires constant attention to multiple hazards.",
+    84: "Provisional License holders cannot use any electronic devices while driving. This includes phones, tablets, video games, and any hand-held device.",
+    85: "Provisional License holder (under 21) may drive unsupervised after passing road test after 6 months supervised driving. All GDL requirements must be completed first.",
+    86: "You should always yield to emergency vehicles, pedestrians, and vehicles already in the intersection. These have legal right-of-way.",
+    87: "Studded snow tires legal in NJ between November 15th and April 1st. These provide excellent traction on ice and snow.",
+    88: "Parking uphill with curb on right, wheels should be turned away from the curb. If brakes fail, car will roll into the curb rather than into traffic.",
+    89: "Altering a license may result in fine up to $1,000, up to 6 months imprisonment, and loss of driving privilege. Never modify any license document.",
+    90: "GDL Exam Permit or Provisional (under 21) driving hours are 5:01AM to 11:00PM. Outside these hours, unsupervised driving is prohibited.",
+    91: "If someone gets drunk at your home and has accident, you could become involved in a lawsuit. Social host liability laws can hold you responsible for serving alcohol to intoxicated guests who then drive.",
+    92: "A provisional driver is provisional for 1 year. After completing the probationary period with no violations, you receive a basic license.",
+    93: "Parking downhill with curb on right, wheels should be turned toward the curb. This way, if brakes fail, car stops against the curb.",
+    94: "You cannot park in front of a fire hydrant, in a bus stop, or in front of a driveway. These areas must remain clear for emergency access.",
+    95: "Double solid lines in center of 2-way road means traffic should not cross from either side. This is a no-passing zone for both directions.",
+    96: "A person may operate a Moped with a valid basic, motorcycle, or moped license. Mopeds have engines under 50cc and are limited to speeds under 30 mph.",
+    97: "If angry or excited, give yourself time to cool off before driving. Emotional driving impairs judgment similar to alcohol intoxication.",
+    98: "Best way to reduce alcohol-related accidents is not to drive at all after drinking. Designate a sober driver or use alternative transportation.",
+    99: "Left turn from two-way road onto 4-lane highway: approach close to centerline and turn into left lane. This ensures proper lane placement.",
+    100: "If you go into a skid, take your foot off the gas pedal. Steer in the direction you want to go. Avoid sudden braking.",
+    101: "A child must be in a restraint device if under 18 months in any seat. Rear-facing car seats are safest for infants.",
+    102: "A Railroad Crossing Sign is black and Yellow (Circle). This warning sign indicates a railway crossing ahead.",
+    103: "When sharing road with trucks: give more roadway for wide turns, leave more space when stopping behind, maintain consistent speed when passing. Safety first!",
+    104: "If wheels drift onto dirt shoulder, slow down and turn back onto pavement slowly. Don't jerk the wheel - gradual movement prevents loss of control.",
+    105: "At your Road Test, you must present valid registration, permit, and insurance ID card. All three documents are required.",
+    106: "A green light means go when safe. Still yield to pedestrians and vehicles in the intersection before proceeding.",
+    107: "If you have a flat tire or blowout: grip the wheel firmly (it may pull to one side), let up on gas pedal, and slowly guide vehicle to safe stopping area.",
+    108: "You may not park within 10 feet of a fire hydrant. This applies everywhere in NJ.",
+    109: "If angry or excited, give yourself time to cool off before driving. Emotional distress impairs driving ability.",
+    110: "When driving around a curve, your vehicle may tend to keep going straight due to inertia. Slow down before entering to maintain control.",
+    111: "Two centerlines (1 solid, 1 broken) means passing only on the broken line side. Never cross a solid line to pass.",
+    112: "At a railroad crossing with flashing lights, you must stop. It's the law and trains cannot stop for you.",
+    113: "In adverse weather, truck stopping increase can be 25% more. Wet roads double stopping distance for all vehicles.",
+    114: "Dim your lights to low beam when a car is approaching or you're behind another car. High beams blind other drivers.",
+    115: "Address change must be reported to MVC within 2 weeks. Failure to update can result in fines and missed citations.",
+    116: "To avoid highway hypnosis, avoid looking at one thing for more than a few seconds. Keep eyes moving and stay alert.",
+    117: "When hydroplaning, slow down. Reduce speed gradually and avoid sudden steering or braking. Tires will regain traction.",
+    118: "A person may operate a Moped with any valid license. Class D license covers mopeds.",
+    119: "GDL Special Learner's permit holder must not drive between 11:01 PM and 5:00 AM. Nighttime restrictions reduce crash risk.",
+    120: "Under 21, you may be under the influence if BAC is more than .01%. Zero tolerance law applies.",
+    121: "A 12-oz beer has as much alcohol as 1½ oz of 86 proof whiskey. Standard drink sizes contain equal alcohol.",
+    122: "Moving to NJ, vehicle must be inspected within 14 days after registering. This ensures your vehicle meets NJ safety standards.",
+    123: "When you see/hear emergency vehicles: pull over to extreme right and stop. Move to the right edge of the road and wait for them to pass.",
+    124: "Standard accident prevention formula: be alert, be prepared, act in time. This is the foundation of defensive driving.",
+    125: "GDL Student Learner's Permit holder needs: pass road test, attain 17 years, 6 month supervised driving. All three requirements must be met.",
+    126: "School zone speed limit (unless posted) is 25 m.p.h. Fines are doubled in school zones during school hours.",
+    127: "GDL Exam Permit (21+) supervised driving required minimum 3 months. Practice with an experienced driver.",
+    128: "If 21+, you may be under influence if BAC is more than .08%. This is the legal limit for adults.",
+    129: "A yield sign shape is Triangle (point up). Always slow down and yield to cross traffic.",
+    130: "Provisional License holder may drive unsupervised after passing road test after 6 months supervised driving. Must meet all GDL requirements.",
+    131: "Signals should be used when changing lanes, turning, or slowing down. Always signal 100 feet before action.",
+    132: "GDL Exam Permit/Provisional (under 21) driving hours are 5:01AM to midnight. No unsupervised driving outside these hours.",
+    133: "On a two-lane road, school bus stopped with red lights flashing: you must stop. Stay stopped until bus turns off lights.",
+    134: "Only time sobers up a drinking person. The liver processes about one standard drink per hour. Nothing else speeds this up.",
+    135: "A GDL Permit supervising driver must be 21 or older, NJ licensed, licensed minimum 3 years. Must be in front seat.",
+    136: "To safely share road with trucks, know limitations of visibility, stopping, maneuverability. Give trucks extra space.",
+    137: "If you have a tire blowout, slow down gradually. Don't slam brakes. Guide vehicle to safe stop.",
+    138: "NJ requires you to keep right except when impractical, when passing, or on one-way street. Keep right except to pass.",
+    139: "GDL Special Learner's Permit holder eligible for basic license at 18 with completion of Provisional requirements. Must be 18 or older.",
+    140: "Provisional driver, daytime rain, must have wipers on and headlights on. Both are required for visibility and to be seen.",
+    141: "Altering a license may result in fine up to $1,000, up to 6 months imprisonment, loss of driving privilege. Never alter any license.",
+    142: "A diamond shaped sign is a Warning sign. These yellow signs warn of upcoming hazards or road conditions.",
+    143: "At BAC slightly above .05%, accident risk is double. Risk increases significantly with even small amounts of alcohol.",
+    144: "Parking downhill with curb on right, wheels should be turned toward the curb. Prevents car from rolling into traffic if brakes fail.",
+    145: "A deceleration lane is an extra lane at a highway exit. Use it to slow down before exiting highway.",
+    146: "If someone gets drunk at your home and has accident, you could become involved in a lawsuit. Social host liability is real.",
+    147: "Provisional License holders cannot use any electronic devices while driving. Even hands-free is restricted for young drivers.",
+    148: "Best way to 'talk' to other drivers is use your horn and lights. Use horn for warnings only, headlights to be seen.",
+    149: "If a truck is stopped at a light, stop with enough distance to avoid blind spots. Visibility is limited for truckers.",
+    150: "Best way to reduce alcohol-related accidents is not to drive at all after drinking. Plan ahead for safe transportation.",
+    151: "You should always yield to emergency vehicles, pedestrians, and vehicles already in intersection. It's the law and the safe thing to do.",
+    152: "An eight-sided sign means Stop. Octagonal shape is universal for stop signs.",
+    153: "School zone speed limit (unless posted) is 25 m.p.h. Watch for children and school zones.",
+    154: "Hand signal with hand and arm downward means Slow or stop. Extend arm downward with palm back.",
+    155: "If you miss your exit on an expressway, go on to the next exit. Never back up or make illegal turns.",
+    156: "When driving around a curve, your vehicle may tend to keep going straight. Slow down before entering.",
+    157: "If a truck is stopped at a light, stop with enough distance to avoid blind spots. Stay visible.",
+    158: "GDL Exam Permit/Provisional (under 21) driving hours are 5:01 AM to midnight. No unsupervised night driving.",
+    159: "A solid white line at an intersection means stop behind the line. Don't block the intersection.",
+    160: "A space cushion gives you time to react. Maintain at least 2-second following distance.",
+    161: "At night, be sure you can stop within the distance you can see ahead. Use headlights properly.",
+    162: "To safely share road with trucks, know limitations of visibility, stopping, maneuverability. Give trucks space.",
+    163: "NJ motorists may use hand-held phones only for fire, traffic accidents, or medical emergency. Other use is illegal.",
+    164: "When passing a truck, remember there are several no-zones (blind spots). Pass quickly and completely.",
+    165: "A Moped can be operated with any valid license. Class D license covers moped operation.",
+    166: "Hand signal with hand and arm upward means Right-Turn. Arm points up and bends at elbow.",
+    167: "If someone gets drunk at your home and has accident, you could become involved in a lawsuit. Be responsible.",
+    168: "Before turning, signal at least 100 feet in advance. Give other road users time to react.",
+    169: "After license returned from suspension, probation is one year. Any violations during probation extend suspension.",
+    170: "1½ oz of 86 proof whiskey equals 12 ounces of beer. Standard drinks have equal alcohol content.",
+    171: "A child must be in a restraint device if under 18 months in any seat. Use appropriate car seat.",
+    172: "To regain control in a skid, turn in the same direction as back of car is skidding. Steer into the skid.",
+    173: "All drinks (wine, whiskey, beer) contain about the same amount of alcohol. Standard drink concept.",
+    174: "Provisional driver is provisional for 1 year. Complete the period without violations to get basic license.",
+    175: "You're legally under the influence at BAC of .08%. This is the legal limit in NJ for adults 21+.",
+    176: "GDL law requires remedial training for 4+ points or DUI conviction. Additional penalties apply.",
+    177: "Implied Consent Law means you automatically agree to breath test after DUI arrest. Refusal has consequences.",
+    178: "Two centerlines (1 solid, 1 broken): passing only on the broken line side. Don't cross solid lines.",
+    179: "Every NJ registered vehicle must be insured for Liability. Minimum coverage is required by law.",
+    180: "You may pass on the right when driver ahead is turning left and there's a proper lane. Use caution.",
+    181: "Provisional License (under 21) non-household members allowed: 1. This limits distractions for new drivers.",
+    182: "At your Road Test, you must present all documents. Registration, permit, and insurance are required.",
+    183: "After 2-4 drinks, alcohol impairs your reaction time, coordination and balance, and judgment. Don't drive.",
+    184: "Address change must be reported within 1 week. Update your license and registration.",
+    185: "Proper following distance is at least 2 seconds behind. Increase in bad weather.",
+    186: "Insurance Surcharge convictions include DUI and Breathalyzer Refusal. Additional fees apply.",
+    187: "Parking uphill with curb on right, wheels should be turned away from curb. Safety measure if brakes fail.",
+    188: "Road surfaces are most slippery during first few minutes of rainfall. Oil and water create slick surface.",
+    189: "Under 21, you may be under influence if BAC is more than .01%. Zero tolerance law.",
+    190: "At a railroad crossing with flashing lights, you must stop. Trains always have right-of-way.",
+    191: "GDL Student Learner's Permit needs: pass road test, attain 17 years, 6 month supervised driving. All required.",
+    192: "Can't park within 25 feet of a crosswalk. Keep intersections clear for pedestrians.",
+    193: "Fine for violating GDL conditions is $100. Plus possible license suspension.",
+    194: "Moving to NJ, vehicle inspected within 14 days after registering. Must pass NJ inspection.",
+    195: "High beam lights are used for open country driving. Switch to low beams near other vehicles.",
+    196: "If you go into a skid, take foot off the gas. Then steer in direction you want to go.",
+    197: "3rd DUI conviction results in suspension of driving privilege. Long-term consequences.",
+    198: "GDL Exam Permit (21+) supervised driving required minimum 3 months. Practice with licensed driver.",
+    199: "If a truck driver can't see you in mirrors, you're in the truck's no-zone or blind spot. Stay visible.",
+    200: "If a student driver commits an offense, responsibility is with both student and instructor. Both can be held liable."
+  };
+  
+  return explanations[q.id] || "The correct answer is: " + q.o[q.a];
+}
+
+function goToNextQuestion() {
+  if (currentQuestionIndex < practiceQuestions.length - 1) {
+    currentQuestionIndex++;
+    showQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function goToPrevQuestion() {
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    showQuestion();
+  }
+}
+
+function showResult() {
+  const acquired = Object.keys(learned).length;
+  const required = Object.keys(wrongBank).length;
+  const correct = practiceQuestions.length - required;
+  
+  document.getElementById('result-correct').textContent = correct;
+  document.getElementById('result-wrong').textContent = required;
+  
+  if (required === 0) {
+    document.getElementById('result-icon').textContent = '🏆';
+    document.getElementById('result-title').textContent = 'Perfect Score!';
+    document.getElementById('result-text').textContent = 'You have mastered all questions in this session!';
+  } else if (correct > required) {
+    document.getElementById('result-icon').textContent = '👍';
+    document.getElementById('result-title').textContent = 'Good Job!';
+    document.getElementById('result-text').textContent = `${correct} correct, ${required} to review`;
+  } else {
+    document.getElementById('result-icon').textContent = '📚';
+    document.getElementById('result-title').textContent = 'Keep Practicing!';
+    document.getElementById('result-text').textContent = 'Review the questions you got wrong';
+  }
+  
+  showScreen('result-screen');
+}
+
+function quizAcquired() {
+  const acquiredIds = Object.keys(learned);
+  if (acquiredIds.length === 0) { alert('No questions mastered yet!'); return; }
+  practiceQuestions = acquiredIds.map(id => questions.find(q => q.id == id)).sort(() => Math.random() - 0.5);
+  currentQuestionIndex = 0;
+  showScreen('question-screen');
+  showQuestion();
+}
+
+function quizRequired() {
+  const requiredIds = Object.keys(wrongBank);
+  if (requiredIds.length === 0) { alert('No questions to review!'); return; }
+  practiceQuestions = requiredIds.map(id => questions.find(q => q.id == id)).sort(() => Math.random() - 0.5);
+  currentQuestionIndex = 0;
+  showScreen('question-screen');
+  showQuestion();
+}
+
+updateStats();
+showHome();
+</script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+# Source materials — kept local only
+*.pdf
+*.docx
+*.png
+NJ_Knowledge_Test_Practice/
+
+# Claude Code session data
+.claude/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
