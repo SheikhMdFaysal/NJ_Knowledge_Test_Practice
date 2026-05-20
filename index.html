@@ -655,8 +655,8 @@
       <div class="modes">
         <button class="mode-btn primary" onclick="startMode('study')">
           <span class="icon">📖</span>
-          <span class="name">Study Mode</span>
-          <span class="desc">Walk through all 222 with explanations</span>
+          <span class="name" id="study-name">Study Mode</span>
+          <span class="desc" id="study-desc">Walk through all 222 with explanations</span>
         </button>
         <button class="mode-btn" onclick="startMode('exam')">
           <span class="icon">📝</span>
@@ -733,10 +733,11 @@
   <section id="screen-quiz" class="screen quiz-screen">
     <div class="card">
       <div class="quiz-header">
-        <span class="quiz-meta">Q <strong id="q-idx">1</strong> / <strong id="q-total">50</strong></span>
+        <span class="quiz-meta" onclick="jumpToQuestion()" style="cursor:pointer" title="Tap to jump">Q <strong id="q-idx">1</strong> / <strong id="q-total">50</strong></span>
         <span class="quiz-tag cat" id="q-cat">—</span>
         <span class="quiz-tag" id="q-mode">Study</span>
         <span class="quiz-tag timer hidden" id="q-timer">20:00</span>
+        <button class="flag-btn" onclick="jumpToQuestion()" title="Jump to a specific question">↗</button>
         <button class="flag-btn" id="flag-btn" onclick="toggleFlag()" title="Flag">🚩</button>
       </div>
       <div class="top-question-bar">
@@ -1340,6 +1341,7 @@ function loadState() {
       const s = JSON.parse(raw);
       if (!s.miniQuiz) s.miniQuiz = {}; // {idx: {best, attempts}}
       if (!s.flashKnown) s.flashKnown = {};
+      if (typeof s.studyIdx !== 'number') s.studyIdx = 0;
       return s;
     }
   } catch(e){}
@@ -1352,7 +1354,8 @@ function loadState() {
     theme: 'dark',
     examDate: '2026-05-28T08:00:00',
     miniQuiz: {},
-    flashKnown: {}
+    flashKnown: {},
+    studyIdx: 0
   };
 }
 function save() { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
@@ -1366,6 +1369,7 @@ function startMode(mode) {
   switch(mode) {
     case 'study':
       qs = QUESTIONS.slice();
+      opts.resumeIdx = Math.min(state.studyIdx || 0, qs.length - 1);
       break;
     case 'exam':
       qs = shuffle(QUESTIONS.slice()).slice(0, 50);
@@ -1404,7 +1408,7 @@ function startCategory(cat) {
 function startQuiz(qs, opts) {
   quiz = {
     questions: qs,
-    idx: 0,
+    idx: Math.max(0, Math.min(opts.resumeIdx || 0, qs.length - 1)),
     mode: opts.mode,
     examMode: !!opts.examMode,
     picks: {},
@@ -1414,6 +1418,18 @@ function startQuiz(qs, opts) {
   };
   showScreen('quiz');
   if (quiz.timerEnd) startTimer();
+  renderQuestion();
+}
+
+function jumpToQuestion() {
+  if (!quiz) return;
+  const total = quiz.questions.length;
+  const input = prompt(`Jump to question (1 – ${total}):`, String(quiz.idx + 1));
+  if (input == null) return;
+  const n = parseInt(input, 10);
+  if (isNaN(n) || n < 1 || n > total) { toast('Out of range'); return; }
+  quiz.idx = n - 1;
+  if (quiz.mode === 'study') { state.studyIdx = quiz.idx; save(); }
   renderQuestion();
 }
 
@@ -1497,11 +1513,13 @@ function revealAnswer(i, withExplanation) {
 function nextQuestion() {
   if (quiz.idx >= quiz.questions.length - 1) return finishQuiz();
   quiz.idx++;
+  if (quiz.mode === 'study') { state.studyIdx = quiz.idx; save(); }
   renderQuestion();
 }
 function prevQuestion() {
   if (quiz.idx === 0) return;
   quiz.idx--;
+  if (quiz.mode === 'study') { state.studyIdx = quiz.idx; save(); }
   renderQuestion();
 }
 
@@ -1540,6 +1558,10 @@ function finishQuiz() {
     if (!state.bestExam || pct > state.bestExam.score) {
       state.bestExam = { score: pct, total, date: new Date().toISOString() };
     }
+  }
+  if (quiz.mode === 'study') {
+    // Study session completed — clear resume position
+    state.studyIdx = 0;
   }
   if (typeof quiz.miniIdx === 'number') {
     const prev = state.miniQuiz[quiz.miniIdx];
@@ -1667,6 +1689,20 @@ function updateHomeStats() {
 
   document.getElementById('mode-review-count').textContent = review;
   document.getElementById('mode-flag-count').textContent = flagged;
+
+  // Study Mode resume hint
+  const sIdx = state.studyIdx || 0;
+  const sName = document.getElementById('study-name');
+  const sDesc = document.getElementById('study-desc');
+  if (sName && sDesc) {
+    if (sIdx > 0 && sIdx < total) {
+      sName.textContent = 'Resume Study Mode';
+      sDesc.textContent = `Continue from Q${sIdx + 1} of ${total}`;
+    } else {
+      sName.textContent = 'Study Mode';
+      sDesc.textContent = `Walk through all ${total} with explanations`;
+    }
+  }
 }
 
 /* ===================== CATEGORIES ===================== */
@@ -1777,7 +1813,8 @@ function confirmReset() {
   if (confirm('Reset ALL progress (mastered, review, flagged, best exam)?')) {
     state = {
       learned:{}, wrong:{}, flagged:{}, answered:{},
-      bestExam:null, theme: state.theme, examDate: state.examDate
+      bestExam:null, theme: state.theme, examDate: state.examDate,
+      miniQuiz:{}, flashKnown:{}, studyIdx: 0
     };
     save();
     updateHomeStats();
