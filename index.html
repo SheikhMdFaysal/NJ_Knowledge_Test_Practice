@@ -439,58 +439,110 @@
   .rate-btn.study { background: rgba(239,68,68,0.12); color: var(--danger); border: 1px solid rgba(239,68,68,0.4); }
   .rate-btn.study:hover { background: rgba(239,68,68,0.22); }
 
-  /* ===== Mind Map ===== */
-  .mm-wrap { padding: 12px 0; }
-  .mm-center {
-    margin: 0 auto 24px; max-width: 320px;
+  /* ===== Mind Map (branching) ===== */
+  .mindmap {
+    position: relative;
+    padding: 8px 0 20px;
+    min-height: 480px;
+  }
+  .mindmap svg.mm-svg {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+  .mm-stage {
+    position: relative; z-index: 1;
+    display: grid; grid-template-columns: minmax(150px, 38%) 1fr;
+    gap: 24px; align-items: center;
+  }
+  @media (min-width: 700px) {
+    .mm-stage { grid-template-columns: minmax(220px, 32%) 1fr; gap: 48px; }
+  }
+  .mm-root {
+    background: #475569;
+    color: #fff;
+    padding: 18px 16px; border-radius: 14px;
+    text-align: center; font-weight: 700; font-size: 15px;
+    line-height: 1.3;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.25);
+    position: sticky; top: 90px;
+  }
+  @media (min-width: 700px) { .mm-root { font-size: 18px; padding: 22px; } }
+  .mm-root .mm-sub { font-size: 11px; opacity: 0.7; margin-top: 6px; font-weight: 500; }
+  .mm-branches { display: flex; flex-direction: column; gap: 14px; }
+  .mm-branch { position: relative; }
+  .mm-branch-head {
+    background: #3d4a63;
+    color: #fff;
+    padding: 12px 38px 12px 16px; border-radius: 12px;
+    font-weight: 600; font-size: 13px; line-height: 1.3;
+    cursor: pointer; position: relative;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.18);
+    transition: all 0.18s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  @media (min-width: 700px) { .mm-branch-head { font-size: 15px; padding: 14px 42px 14px 18px; } }
+  [data-theme="light"] .mm-root, [data-theme="light"] .mm-branch-head { background: #475569; }
+  .mm-branch-head:hover { transform: translateX(3px); }
+  .mm-branch-head .ic { font-size: 18px; }
+  .mm-toggle {
+    position: absolute; right: -34px; top: 50%; transform: translateY(-50%);
+    width: 26px; height: 26px; border-radius: 50%;
+    background: #3d4a63; color: #fff;
+    display: grid; place-items: center;
+    font-size: 13px; font-weight: 700;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    transition: transform 0.25s;
+  }
+  .mm-branch.open .mm-toggle { transform: translateY(-50%) rotate(90deg); background: var(--accent); color: #042f2e; }
+  .mm-branch.open .mm-branch-head { background: linear-gradient(135deg, #475569, #3d4a63); border-left: 3px solid var(--accent); padding-left: 15px; }
+  .mm-leaves {
+    display: none; padding: 10px 0 4px 18px;
+    border-left: 2px solid rgba(16,185,129,0.25);
+    margin-left: 16px; margin-top: 8px;
+  }
+  .mm-branch.open .mm-leaves { display: block; animation: slideIn 0.3s; }
+  .mm-leaf {
+    background: #3d4a63;
+    color: #fff;
+    padding: 9px 14px; border-radius: 10px;
+    font-size: 12.5px; line-height: 1.35; font-weight: 500;
+    margin-bottom: 6px; position: relative;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  @media (min-width: 700px) { .mm-leaf { font-size: 13.5px; padding: 10px 16px; } }
+  [data-theme="light"] .mm-leaf { background: #475569; }
+  .mm-leaf::before {
+    content: ''; position: absolute; left: -19px; top: 50%;
+    width: 17px; height: 2px; background: rgba(16,185,129,0.4);
+  }
+  .mm-leaf strong { color: var(--accent); font-weight: 700; }
+  .mm-actions-row {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 8px;
+    margin-top: 10px;
+  }
+  .mm-btn {
+    padding: 9px 12px; border-radius: 10px;
+    font-size: 12px; font-weight: 600; cursor: pointer;
+    border: 1px solid var(--card-border); background: var(--card);
+    color: var(--text); font-family: inherit;
+    transition: all 0.15s;
+  }
+  .mm-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .mm-btn.primary {
     background: linear-gradient(135deg, var(--accent), var(--accent-2));
-    color: #042f2e; padding: 18px 22px; border-radius: 20px;
-    text-align: center; font-weight: 800; font-size: 18px;
-    box-shadow: 0 10px 30px rgba(16,185,129,0.35);
+    color: #042f2e; border-color: transparent;
   }
-  .mm-center .sub { font-size: 11px; font-weight: 600; opacity: 0.8; margin-top: 4px; }
-  .mm-grid {
-    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-  }
-  @media (min-width: 600px) { .mm-grid { grid-template-columns: repeat(3, 1fr); } }
-  @media (min-width: 900px) { .mm-grid { grid-template-columns: repeat(4, 1fr); } }
-  .mm-node {
-    background: var(--bg-elev-2); border: 1px solid var(--card-border);
-    border-radius: 14px; padding: 14px; cursor: pointer; transition: all 0.2s;
-    text-align: center; position: relative; color: var(--text);
-  }
-  [data-theme="light"] .mm-node { background: #fff; }
-  .mm-node:hover { transform: translateY(-3px) scale(1.02); border-color: var(--accent); box-shadow: 0 8px 20px rgba(0,0,0,0.18); }
-  .mm-node.active { background: linear-gradient(135deg, rgba(16,185,129,0.25), rgba(6,182,212,0.15)); border-color: var(--accent); }
-  .mm-node .mm-icon { font-size: 22px; margin-bottom: 6px; }
-  .mm-node .mm-name { font-size: 13px; font-weight: 700; line-height: 1.3; }
-  .mm-node .mm-count { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
-  .mm-node .mm-prog {
-    position: absolute; top: 6px; right: 8px;
+  .mm-progress-pill {
+    position: absolute; right: 38px; top: 50%; transform: translateY(-50%);
+    background: rgba(255,255,255,0.12); color: #fff;
+    padding: 2px 8px; border-radius: 999px;
     font-size: 10px; font-weight: 700;
   }
-  .mm-node .mm-prog.full { color: var(--accent); }
-  .mm-detail {
-    margin-top: 18px; background: var(--bg-elev-2);
-    border: 1px solid var(--card-border); border-radius: 14px; padding: 16px;
-    animation: slideIn 0.3s;
+  .mm-progress-pill.full { background: var(--accent); color: #042f2e; }
+  @media (max-width: 699px) {
+    .mm-progress-pill { display: none; }
   }
-  [data-theme="light"] .mm-detail { background: #f8fafc; }
-  .mm-detail h3 { font-size: 16px; margin-bottom: 4px; }
-  .mm-detail .mm-detail-sub { font-size: 12px; color: var(--text-dim); margin-bottom: 14px; }
-  .mm-detail .mm-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
-  .mm-q-line {
-    padding: 10px 12px; background: var(--card); border-radius: 8px;
-    margin-bottom: 6px; font-size: 13px; line-height: 1.4;
-    display: flex; align-items: flex-start; gap: 10px;
-  }
-  [data-theme="light"] .mm-q-line { background: #fff; }
-  .mm-q-line .dot {
-    width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; margin-top: 6px;
-    background: var(--card-border);
-  }
-  .mm-q-line .dot.right { background: var(--accent); }
-  .mm-q-line .dot.wrong { background: var(--danger); }
 
   /* ===== Mini quizzes ===== */
   .mq-grid {
@@ -763,14 +815,16 @@
   <section id="screen-mindmap" class="screen quiz-screen">
     <div class="card">
       <h2>🗺️ Mind Map — NJ Knowledge</h2>
-      <div class="muted" style="margin-bottom: 16px;">Tap any topic to see its questions and practice.</div>
-      <div class="mm-wrap">
-        <div class="mm-center">
-          🚗 NJ Driver Test
-          <div class="sub">222 questions · <span id="mm-cat-count">0</span> topics</div>
+      <div class="muted" style="margin-bottom: 14px;">Tap a branch to expand its key facts. Tap "Quiz" to drill that theme.</div>
+      <div class="mindmap" id="mindmap">
+        <svg class="mm-svg" id="mm-svg" preserveAspectRatio="none"></svg>
+        <div class="mm-stage">
+          <div class="mm-root" id="mm-root">
+            🚗 NJ Driver Knowledge Test
+            <div class="mm-sub">222 questions · 8 themes</div>
+          </div>
+          <div class="mm-branches" id="mm-branches"></div>
         </div>
-        <div class="mm-grid" id="mm-grid"></div>
-        <div id="mm-detail"></div>
       </div>
     </div>
     <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="goHome()">⏏ Back to Home</button>
@@ -1569,6 +1623,7 @@ function labelForMode(m) {
   if (m === 'shuffle') return 'Shuffle';
   if (m?.startsWith('category:')) return m.split(':')[1];
   if (m?.startsWith('mini:')) return 'Mini Quiz #' + m.split(':')[1];
+  if (m?.startsWith('theme:')) return m.split(':')[1];
   return m || '';
 }
 
@@ -1849,73 +1904,217 @@ function flashRate(known) {
   else toast('🎉 You finished this deck!');
 }
 
-/* ===================== MIND MAP ===================== */
-const CATEGORY_ICONS = {
-  "Alcohol":"🍺", "GDL":"🎓", "Trucks":"🚛", "Signs":"🚸", "Intersections":"🚦",
-  "Parking":"🅿️", "Turning":"↩️", "Lights":"💡", "School Buses":"🚌",
-  "Safety":"🛡️", "Accident Prevention":"⚠️", "Passing":"↪️", "Vehicle Equipment":"🔧",
-  "Hand Signals":"✋", "Curves":"🌀", "Weather":"🌧️", "Speed Limits":"🛑",
-  "Cell Phone":"📱", "Railroad":"🚂", "License":"🆔", "Safe Driving":"🚗",
-  "Road Markings":"🛣️", "Points":"📌", "Following Distance":"📏",
-  "Moped":"🛵", "Insurance":"📄", "Highway":"🛤️", "Emergency":"🚨",
-  "Emergency Vehicles":"🚑", "Pedestrians":"🚶"
-};
+/* ===================== MIND MAP (branching) ===================== */
+const MIND_MAP = [
+  {
+    name: "GDL & Underage Laws", icon: "🎓",
+    cats: ["GDL", "Cell Phone"],
+    facts: [
+      "Permit Restrictions: <strong>11:01 PM – 5:00 AM</strong>",
+      "Supervising Driver: <strong>21+, licensed 3+ yrs</strong>",
+      "Passenger Limit: <strong>Household + 1 additional</strong>",
+      "Violations: <strong>$100 fine</strong>",
+      "License Duration: <strong>1 year provisional</strong>",
+      "Supervision: <strong>6 months under 21, 3 months 21+</strong>",
+      "Under-21 BAC over <strong>.01% is illegal</strong>",
+      "GDL plates: <strong>red decal front + rear</strong>"
+    ]
+  },
+  {
+    name: "Alcohol & DUI", icon: "🍺",
+    cats: ["Alcohol"],
+    facts: [
+      "Legal Limit: <strong>0.08% for 21+</strong>",
+      "Under 21: <strong>Over .01% is illegal</strong>",
+      "Accident Risk: <strong>2× at .05%, 6× at .10%, 25× at .15%</strong>",
+      "Equivalency: <strong>12 oz beer = 5 oz wine = 1½ oz whiskey</strong>",
+      "Sobriety: <strong>Only time works</strong> — not coffee or showers",
+      "Liability: <strong>Host may be sued</strong> (social host law)",
+      "Implied Consent: <strong>auto-agree to breath test on arrest</strong>",
+      "3rd DUI: <strong>license suspension</strong>"
+    ]
+  },
+  {
+    name: "Intersections & Right-of-Way", icon: "🚦",
+    cats: ["Intersections", "Turning", "Railroad"],
+    facts: [
+      "Uncontrolled: <strong>Reduce speed, be ready to stop</strong>",
+      "Yield to: <strong>emergency vehicles, peds, cars already in</strong>",
+      "Right on Red: <strong>Full stop first, then check traffic</strong>",
+      "Railroad Crossing: <strong>Stop at flashing red lights</strong> (≥15 ft)",
+      "Left Turn: approach close to centerline",
+      "Right Turn: yield to peds, bicyclists, skaters",
+      "Keep right except passing or one-way"
+    ]
+  },
+  {
+    name: "Sharing the Road", icon: "🤝",
+    cats: ["Trucks", "School Buses", "Emergency Vehicles", "Emergency", "Moped", "Pedestrians", "Passing"],
+    facts: [
+      "Truck Blind Spots: <strong>No-Zones</strong> on all 4 sides",
+      "Truck Stopping: <strong>+25%</strong> in bad weather",
+      "School Bus: <strong>Stop for flashing red lights</strong>",
+      "Emergency Vehicles: <strong>Pull to extreme right and stop</strong>",
+      "Moped: any valid license OK",
+      "Failure to yield to pedestrians: <strong>$500 + 2 pts</strong>",
+      "Pass on right only when car ahead is turning left"
+    ]
+  },
+  {
+    name: "Parking Rules", icon: "🅿️",
+    cats: ["Parking"],
+    facts: [
+      "Fire Hydrant: <strong>10 feet</strong>",
+      "Crosswalk: <strong>25 feet</strong>",
+      "Uphill with curb: <strong>wheels AWAY from curb</strong>",
+      "Downhill with curb: <strong>wheels TOWARD curb</strong>",
+      "Never park: hydrant, bus stop, driveway"
+    ]
+  },
+  {
+    name: "Safe Driving Habits", icon: "🚗",
+    cats: ["Safe Driving", "Curves", "Weather", "Following Distance", "Highway", "Accident Prevention"],
+    facts: [
+      "Following Distance: <strong>2-second rule</strong> (3-sec at any speed)",
+      "City Driving: <strong>Look 12 seconds ahead</strong>",
+      "Hydroplaning: <strong>Slow down</strong> (no slamming brakes)",
+      "Skidding: <strong>Foot off gas, steer INTO the skid</strong>",
+      "Accident Prevention: <strong>Be alert, prepared, act in time</strong>",
+      "Brakes fail: <strong>downshift + pump pedal</strong>",
+      "Rain: most slippery in the first few minutes",
+      "Missed exit: continue to next exit — never back up"
+    ]
+  },
+  {
+    name: "Signs, Signals & Markings", icon: "🚸",
+    cats: ["Signs", "Lights", "Road Markings", "Hand Signals"],
+    facts: [
+      "Triangle: <strong>Yield</strong>",
+      "Octagon: <strong>Stop</strong>",
+      "Diamond: <strong>Warning</strong>",
+      "Circle: <strong>Railroad Crossing</strong>",
+      "Pentagon (yellow-green): <strong>Pedestrian/Bike sharing</strong>",
+      "Solid center line: <strong>No passing</strong>",
+      "Broken center line: <strong>Passing permitted</strong>",
+      "Hand signals: <strong>Up = Right, Out = Left, Down = Stop</strong>",
+      "Signal at least 100 ft before turn",
+      "Flashing red = Stop, yield, proceed"
+    ]
+  },
+  {
+    name: "Equipment & Maintenance", icon: "🔧",
+    cats: ["Vehicle Equipment", "Safety", "Insurance", "License", "Points", "Speed Limits"],
+    facts: [
+      "Seat Belts: <strong>Required for all passengers</strong>",
+      "High Beams: <strong>Open country driving</strong> (low within 500 ft)",
+      "Studded Snow Tires: <strong>Nov 15 – Apr 1</strong>",
+      "Insurance: <strong>Liability required</strong>",
+      "Speed limit (unposted): <strong>25 mph</strong> business/residential",
+      "School zone: <strong>25 mph</strong>",
+      "Address change: <strong>report within 1 week</strong>",
+      "Construction zone: <strong>double fines</strong>",
+      "Moved to NJ: inspect car within 14 days"
+    ]
+  }
+];
 
 function openMindMap() {
   renderMindMap();
   showScreen('mindmap');
+  // Draw SVG curves after layout settles
+  requestAnimationFrame(() => requestAnimationFrame(drawMindMapCurves));
 }
 
 function renderMindMap() {
-  const counts = {};
-  QUESTIONS.forEach(q => counts[q.c] = (counts[q.c]||0) + 1);
-  const cats = Object.keys(counts).sort();
-  document.getElementById('mm-cat-count').textContent = cats.length;
-  document.getElementById('mm-grid').innerHTML = cats.map(c => {
-    const qs = QUESTIONS.filter(q => q.c === c);
+  const root = document.getElementById('mm-root');
+  root.innerHTML = `🚗 NJ Driver Knowledge Test
+    <div class="mm-sub">222 questions · ${MIND_MAP.length} themes</div>`;
+
+  const branchesEl = document.getElementById('mm-branches');
+  branchesEl.innerHTML = MIND_MAP.map((b, i) => {
+    const qs = QUESTIONS.filter(q => b.cats.includes(q.c));
     const mastered = qs.filter(q => state.learned[q.id]).length;
-    const isFull = mastered === qs.length;
-    return `<div class="mm-node" onclick="openMmCategory('${c.replace(/'/g,"\\'")}')">
-      <div class="mm-prog ${isFull?'full':''}">${mastered}/${qs.length}</div>
-      <div class="mm-icon">${CATEGORY_ICONS[c]||'📌'}</div>
-      <div class="mm-name">${escapeHtml(c)}</div>
-      <div class="mm-count">${counts[c]} question${counts[c]>1?'s':''}</div>
+    const isFull = qs.length > 0 && mastered === qs.length;
+    return `<div class="mm-branch" data-i="${i}">
+      <div class="mm-branch-head" onclick="toggleMmBranch(${i})">
+        <span class="ic">${b.icon}</span>
+        <span>${escapeHtml(b.name)}</span>
+        <span class="mm-progress-pill ${isFull?'full':''}">${mastered}/${qs.length}</span>
+        <div class="mm-toggle">›</div>
+      </div>
+      <div class="mm-leaves">
+        ${b.facts.map(f => `<div class="mm-leaf">${f}</div>`).join('')}
+        <div class="mm-actions-row">
+          <button class="mm-btn primary" onclick="quizTheme(${i})">🎯 Quiz ${qs.length} Qs</button>
+          <button class="mm-btn" onclick="flashTheme(${i})">🃏 Flashcards</button>
+        </div>
+      </div>
     </div>`;
   }).join('');
-  document.getElementById('mm-detail').innerHTML = '';
 }
 
-function openMmCategory(cat) {
-  document.querySelectorAll('.mm-node').forEach(n => n.classList.remove('active'));
-  const nodes = document.querySelectorAll('.mm-node');
-  nodes.forEach(n => { if (n.querySelector('.mm-name')?.textContent === cat) n.classList.add('active'); });
-  const qs = QUESTIONS.filter(q => q.c === cat);
-  const mastered = qs.filter(q => state.learned[q.id]).length;
-  const review = qs.filter(q => state.wrong[q.id]).length;
-  document.getElementById('mm-detail').innerHTML = `
-    <div class="mm-detail">
-      <h3>${CATEGORY_ICONS[cat]||'📌'} ${escapeHtml(cat)}</h3>
-      <div class="mm-detail-sub">${qs.length} questions · ${mastered} mastered · ${review} to review</div>
-      <div class="mm-actions">
-        <button class="btn btn-primary" onclick="startCategory('${cat.replace(/'/g,"\\'")}')">🎯 Quiz this topic</button>
-        <button class="btn btn-ghost" onclick="flashFromCategory('${cat.replace(/'/g,"\\'")}')">🃏 Flashcards</button>
-      </div>
-      ${qs.map(q => {
-        const status = state.learned[q.id] ? 'right' : (state.wrong[q.id] ? 'wrong' : '');
-        return `<div class="mm-q-line"><span class="dot ${status}"></span><span>${escapeHtml(q.q)}</span></div>`;
-      }).join('')}
-    </div>`;
-  document.getElementById('mm-detail').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+function toggleMmBranch(i) {
+  const branch = document.querySelector(`.mm-branch[data-i="${i}"]`);
+  branch.classList.toggle('open');
+  // Redraw curves after expand/collapse animation
+  requestAnimationFrame(() => requestAnimationFrame(drawMindMapCurves));
+  // Also redraw a bit later as content animates in
+  setTimeout(drawMindMapCurves, 320);
 }
 
-function flashFromCategory(cat) {
-  flash.cards = QUESTIONS.filter(q => q.c === cat);
-  flash.deck = 'cat:' + cat;
+function drawMindMapCurves() {
+  const svg = document.getElementById('mm-svg');
+  const stage = document.querySelector('.mindmap');
+  if (!svg || !stage) return;
+  const root = document.getElementById('mm-root');
+  const branches = document.querySelectorAll('.mm-branch-head');
+  const stageRect = stage.getBoundingClientRect();
+  const rootRect = root.getBoundingClientRect();
+
+  svg.setAttribute('width', stageRect.width);
+  svg.setAttribute('height', stageRect.height);
+  svg.setAttribute('viewBox', `0 0 ${stageRect.width} ${stageRect.height}`);
+
+  const startX = rootRect.right - stageRect.left;
+  const startY = rootRect.top + rootRect.height/2 - stageRect.top;
+
+  let paths = '';
+  branches.forEach(b => {
+    const r = b.getBoundingClientRect();
+    const endX = r.left - stageRect.left;
+    const endY = r.top + r.height/2 - stageRect.top;
+    const dx = (endX - startX);
+    const c1x = startX + dx * 0.55;
+    const c1y = startY;
+    const c2x = endX - dx * 0.55;
+    const c2y = endY;
+    paths += `<path d="M ${startX} ${startY} C ${c1x} ${c1y}, ${c2x} ${c2y}, ${endX} ${endY}" stroke="#8b9bd4" stroke-width="2" fill="none" stroke-opacity="0.55"/>`;
+  });
+  svg.innerHTML = paths;
+}
+
+function quizTheme(i) {
+  const b = MIND_MAP[i];
+  const qs = QUESTIONS.filter(q => b.cats.includes(q.c));
+  if (!qs.length) return toast('No questions in this theme');
+  startQuiz(shuffle(qs.slice()), { mode: 'theme:' + b.name });
+}
+function flashTheme(i) {
+  const b = MIND_MAP[i];
+  flash.cards = QUESTIONS.filter(q => b.cats.includes(q.c));
+  flash.deck = 'theme:' + b.name;
   flash.idx = 0; flash.flipped = false;
   showScreen('flash');
   buildDeckChips();
   renderFlash();
 }
+
+// Redraw curves on resize
+window.addEventListener('resize', () => {
+  if (document.getElementById('screen-mindmap')?.style.display === 'block') {
+    drawMindMapCurves();
+  }
+});
 
 /* ===================== MINI QUIZZES ===================== */
 const MQ_COUNT = 22;
