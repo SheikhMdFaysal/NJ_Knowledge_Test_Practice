@@ -1,8 +1,12 @@
-# NJ Driver Knowledge Test — Practice App
+# NJ MVC Knowledge Test — Permit Practice
 
-A single-file, offline-capable web app for practicing the New Jersey driver
-knowledge test. 222 real questions with answer explanations, multiple study
-modes, and progress tracking.
+A single-file, offline-capable web app for practicing the **New Jersey MVC
+Knowledge Test** (driver permit exam). 222 real practice questions with
+answer explanations, multiple study modes, and full progress tracking — no
+sign-up, no backend, all data stays in your browser.
+
+> Search terms covered: *NJ MVC permit test · NJ knowledge test · NJ driver
+> license practice · New Jersey permit practice test · MVC test prep.*
 
 **Live app:** open [`index.html`](./index.html) in any browser, or enable
 GitHub Pages on this repo and visit the served URL on mobile or desktop.
