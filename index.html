@@ -1684,13 +1684,15 @@ function renderQuestion() {
       renderExamControls('submit');
     }
   } else {
+    // Restore standard controls FIRST (in case Mock Exam swapped them out)
+    restoreStandardControls();
     if (quiz.picks[q.id] != null) {
       revealAnswer(quiz.picks[q.id], false);
     }
-    document.getElementById('prev-btn').disabled = (quiz.idx === 0);
-    document.getElementById('next-btn').textContent = (quiz.idx === total - 1) ? 'Finish ✓' : 'Next →';
-    // Restore standard controls in case they were swapped
-    restoreStandardControls();
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    if (prevBtn) prevBtn.disabled = (quiz.idx === 0);
+    if (nextBtn) nextBtn.textContent = (quiz.idx === total - 1) ? 'Finish ✓' : 'Next →';
   }
 }
 
