@@ -293,6 +293,24 @@
     cursor: pointer; font-size: 14px;
   }
   .flag-btn.active { color: var(--warn); border-color: var(--warn); background: rgba(245,158,11,0.08); }
+  .flag-btn.audio-on { color: var(--accent); border-color: var(--accent); background: rgba(16,185,129,0.1); animation: pulse-soft 2s ease-in-out infinite; }
+  @keyframes pulse-soft { 0%,100% { box-shadow: 0 0 0 0 rgba(16,185,129,0.5);} 50% { box-shadow: 0 0 0 6px rgba(16,185,129,0);} }
+  .audio-rate-row {
+    display: none; gap: 6px; align-items: center;
+    margin-top: 10px; padding: 8px 12px;
+    background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.25);
+    border-radius: 10px; font-size: 12px; color: var(--text-dim);
+  }
+  .audio-rate-row.visible { display: flex; }
+  .audio-rate-row label { font-weight: 600; color: var(--text); }
+  .audio-rate-row input[type=range] { flex: 1; accent-color: var(--accent); }
+  .audio-rate-row .v { font-variant-numeric: tabular-nums; font-weight: 700; color: var(--accent); min-width: 32px; text-align: right; }
+  .speak-now-btn {
+    background: var(--card); border: 1px solid var(--card-border);
+    color: var(--text); padding: 4px 8px; border-radius: 6px;
+    font-size: 11px; cursor: pointer; font-family: inherit;
+  }
+  .speak-now-btn:hover { border-color: var(--accent); color: var(--accent); }
 
   /* ===== Result screen ===== */
   .result-hero {
@@ -859,8 +877,15 @@
         <span class="quiz-tag" id="q-mode">Study</span>
         <span class="quiz-tag timer hidden" id="q-timer">20:00</span>
         <span class="quiz-tag revisit-tag hidden" id="q-revisit">🔁 Revisit</span>
+        <button class="flag-btn hidden" id="audio-btn" onclick="toggleAudio()" title="Read aloud">🔇</button>
         <button class="flag-btn" onclick="jumpToQuestion()" title="Jump to a specific question">↗</button>
         <button class="flag-btn" id="flag-btn" onclick="toggleFlag()" title="Flag">🚩</button>
+      </div>
+      <div class="audio-rate-row" id="audio-rate-row">
+        <label>🔊 Speed</label>
+        <input type="range" id="audio-rate" min="0.6" max="1.4" step="0.05" value="0.95">
+        <span class="v" id="audio-rate-v">0.95×</span>
+        <button class="speak-now-btn" onclick="speakCurrentQuestion()">↺ Replay</button>
       </div>
       <div class="top-question-bar">
         <div class="bar"><i id="q-bar" style="width:0%"></i></div>
@@ -1539,6 +1564,8 @@ function loadState() {
       if (!s.miniQuiz) s.miniQuiz = {}; // {idx: {best, attempts}}
       if (!s.flashKnown) s.flashKnown = {};
       if (typeof s.studyIdx !== 'number') s.studyIdx = 0;
+      if (typeof s.audioOn !== 'boolean') s.audioOn = false;
+      if (typeof s.audioRate !== 'number') s.audioRate = 0.95;
       return s;
     }
   } catch(e){}
@@ -1552,7 +1579,9 @@ function loadState() {
     examDate: '2026-05-28T08:00:00',
     miniQuiz: {},
     flashKnown: {},
-    studyIdx: 0
+    studyIdx: 0,
+    audioOn: false,
+    audioRate: 0.95
   };
 }
 function save() { localStorage.setItem(LS_KEY, JSON.stringify(state)); }
@@ -1661,6 +1690,15 @@ function renderQuestion() {
   tallyTop.classList.toggle('hidden', !quiz.examMode);
   if (quiz.examMode) updateTally();
 
+  // Audio UI + auto-narration (exam mode only)
+  refreshAudioUI();
+  if (quiz.examMode && state.audioOn && !quiz.locked[q.id]) {
+    // Defer slightly so the DOM is painted first
+    setTimeout(() => speak(buildQuestionScript(q)), 80);
+  } else if (!quiz.examMode) {
+    cancelSpeech();
+  }
+
   const opts = document.getElementById('q-options');
   opts.innerHTML = q.o.map((opt, i) =>
     `<div class="option" data-i="${i}" onclick="pickOption(${i})">
@@ -1747,6 +1785,7 @@ function pickOption(i) {
     if (quiz.locked[q.id]) return;
     quiz.picks[q.id] = i;
     highlightSelected(i);
+    cancelSpeech(); // stop narration once the user engages
     return;
   }
 
@@ -1795,6 +1834,9 @@ function submitAnswer() {
   updateTally();
   revealAnswer(pick, true);
   renderExamControls('next');
+
+  // Narrate the result if audio is on
+  if (state.audioOn) speakResult(q, pick, pick === q.a);
 
   // Auto-pass at 40 correct (NJ MVC passing = 40/50 = 80%)
   if (quiz.correctCount >= 40) {
@@ -1878,6 +1920,7 @@ function toggleFlag() {
 
 function finishQuiz() {
   if (quiz.timerInterval) { clearInterval(quiz.timerInterval); quiz.timerInterval = null; }
+  cancelSpeech();
   let correct = 0;
   const wrongIds = [];
 
@@ -1982,6 +2025,7 @@ function finishQuiz() {
 function exitQuiz() {
   if (confirm('Exit this quiz? Your progress on the answered questions is saved.')) {
     if (quiz?.timerInterval) clearInterval(quiz.timerInterval);
+    cancelSpeech();
     goHome();
   }
 }
@@ -2630,6 +2674,105 @@ function startMiniQuiz(idx) {
   quiz.miniIdx = idx;
 }
 
+/* ===================== AUDIO (Web Speech API) ===================== */
+const SPEECH_SUPPORTED = typeof window !== 'undefined' && 'speechSynthesis' in window;
+let speechVoice = null;
+
+function pickVoice() {
+  if (!SPEECH_SUPPORTED) return null;
+  const voices = window.speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  const preferred = voices.find(v => /en[-_]US/i.test(v.lang) && !v.localService) ||
+                    voices.find(v => /en[-_]US/i.test(v.lang)) ||
+                    voices.find(v => /^en/i.test(v.lang)) ||
+                    voices[0];
+  return preferred;
+}
+if (SPEECH_SUPPORTED) {
+  speechVoice = pickVoice();
+  window.speechSynthesis.onvoiceschanged = () => { speechVoice = pickVoice(); };
+}
+function cancelSpeech() {
+  if (!SPEECH_SUPPORTED) return;
+  try { window.speechSynthesis.cancel(); } catch(e){}
+}
+function speak(text, opts = {}) {
+  if (!SPEECH_SUPPORTED || !state.audioOn) return;
+  if (!text) return;
+  cancelSpeech();
+  const utter = new SpeechSynthesisUtterance(text);
+  if (!speechVoice) speechVoice = pickVoice();
+  if (speechVoice) utter.voice = speechVoice;
+  utter.rate = opts.rate || state.audioRate || 0.95;
+  utter.pitch = opts.pitch || 1.0;
+  utter.volume = 1.0;
+  utter.lang = (speechVoice && speechVoice.lang) || 'en-US';
+  window.speechSynthesis.speak(utter);
+}
+function buildQuestionScript(q) {
+  let s = 'Question. ' + q.q + '. ';
+  q.o.forEach((opt, i) => {
+    s += 'Option ' + String.fromCharCode(65 + i) + '. ' + opt + '. ';
+  });
+  return s;
+}
+function speakCurrentQuestion() {
+  if (!quiz) return;
+  const q = quiz.questions[quiz.idx];
+  if (!q) return;
+  speak(buildQuestionScript(q));
+}
+function speakResult(q, pick, isCorrect) {
+  const letter = String.fromCharCode(65 + q.a);
+  if (isCorrect) {
+    speak('Correct. The answer is ' + letter + '. ' + q.o[q.a] + '.');
+  } else {
+    const exp = EXPLANATIONS[q.id] || '';
+    speak('Incorrect. The correct answer is ' + letter + '. ' + q.o[q.a] + '. ' + exp);
+  }
+}
+function toggleAudio() {
+  if (!SPEECH_SUPPORTED) { toast('🔇 Your browser does not support speech.'); return; }
+  state.audioOn = !state.audioOn;
+  save();
+  refreshAudioUI();
+  if (state.audioOn) {
+    toast('🔊 Read-aloud enabled');
+    speakCurrentQuestion();
+  } else {
+    cancelSpeech();
+    toast('🔇 Read-aloud disabled');
+  }
+}
+function refreshAudioUI() {
+  const btn = document.getElementById('audio-btn');
+  const rateRow = document.getElementById('audio-rate-row');
+  if (!btn || !rateRow) return;
+  if (!quiz?.examMode) {
+    btn.classList.add('hidden');
+    rateRow.classList.remove('visible');
+    return;
+  }
+  btn.classList.remove('hidden');
+  btn.textContent = state.audioOn ? '🔊' : '🔇';
+  btn.classList.toggle('audio-on', state.audioOn);
+  rateRow.classList.toggle('visible', state.audioOn);
+  const rateInput = document.getElementById('audio-rate');
+  const rateLabel = document.getElementById('audio-rate-v');
+  if (rateInput && rateLabel) {
+    rateInput.value = state.audioRate;
+    rateLabel.textContent = state.audioRate.toFixed(2) + '×';
+  }
+}
+document.addEventListener('input', e => {
+  if (e.target?.id === 'audio-rate') {
+    state.audioRate = parseFloat(e.target.value);
+    document.getElementById('audio-rate-v').textContent = state.audioRate.toFixed(2) + '×';
+    save();
+  }
+});
+
+/* ===================== KEYBOARD ===================== */
 document.addEventListener('keydown', e => {
   const quizVisible = document.getElementById('screen-quiz').style.display === 'block';
   if (!quizVisible) return;
