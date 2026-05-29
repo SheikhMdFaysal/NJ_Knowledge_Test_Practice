@@ -2,8 +2,15 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#0f172a">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+<meta name="theme-color" content="#0f172a" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f1f5f9" media="(prefers-color-scheme: light)">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="NJ Driver">
+<meta name="description" content="222-question NJ driver knowledge test practice app — study, mock exam, flashcards, mind map.">
+<link rel="apple-touch-icon" href="Picture of Sheikh Md Faysal.jpeg">
 <title>NJ Driver Test Pro — Practice for May 28</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -79,12 +86,14 @@
   .brand-sub { font-size: 11px; color: var(--text-dim); font-weight: 500; margin-top: 1px; }
   .top-actions { margin-left: auto; display: flex; gap: 8px; align-items: center; }
   .icon-btn {
-    width: 38px; height: 38px; border-radius: 10px;
+    width: 44px; height: 44px; border-radius: 10px;
     background: var(--card); border: 1px solid var(--card-border);
-    color: var(--text); cursor: pointer; font-size: 16px;
+    color: var(--text); cursor: pointer; font-size: 17px;
     display: grid; place-items: center; transition: all 0.15s;
   }
+  @media (min-width: 700px) { .icon-btn { width: 40px; height: 40px; font-size: 16px; } }
   .icon-btn:hover { background: var(--bg-elev-2); transform: translateY(-1px); }
+  .icon-btn:active { transform: scale(0.96); }
 
   /* ===== Layout ===== */
   .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
@@ -123,6 +132,14 @@
   .cd-block .v { font-size: 22px; font-weight: 800; line-height: 1; }
   .cd-block .l { font-size: 10px; opacity: 0.85; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
   @media (min-width: 600px) { .cd-block .v { font-size: 28px; } }
+  .cd-edit-btn {
+    position: absolute; top: 12px; right: 12px; z-index: 2;
+    background: rgba(255,255,255,0.18); border: 1px solid rgba(255,255,255,0.25);
+    color: #fff; width: 36px; height: 36px; border-radius: 10px;
+    cursor: pointer; font-size: 14px; backdrop-filter: blur(6px);
+    transition: all 0.15s;
+  }
+  .cd-edit-btn:hover { background: rgba(255,255,255,0.3); transform: scale(1.05); }
 
   /* ===== Progress ring ===== */
   .progress-row { display: flex; align-items: center; gap: 18px; }
@@ -190,10 +207,11 @@
   /* ===== Buttons ===== */
   .btn {
     display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-    padding: 12px 18px; border-radius: 12px; font-weight: 600; font-size: 14px;
+    padding: 13px 18px; border-radius: 12px; font-weight: 600; font-size: 14.5px;
     cursor: pointer; border: none; transition: all 0.15s;
-    font-family: inherit;
+    font-family: inherit; min-height: 46px;
   }
+  .btn:active { transform: scale(0.97); }
   .btn-primary { background: linear-gradient(135deg, var(--accent), var(--accent-2)); color: #042f2e; }
   .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(16,185,129,0.35); }
   .btn-ghost { background: var(--card); color: var(--text); border: 1px solid var(--card-border); }
@@ -228,10 +246,11 @@
   .options { display: flex; flex-direction: column; gap: 10px; }
   .option {
     background: var(--bg-elev-2); border: 2px solid var(--card-border);
-    border-radius: 12px; padding: 14px 16px; cursor: pointer;
+    border-radius: 12px; padding: 15px 16px; cursor: pointer;
     display: flex; align-items: flex-start; gap: 12px;
-    transition: all 0.15s; user-select: none;
+    transition: all 0.15s; user-select: none; min-height: 56px;
   }
+  .option:active { transform: scale(0.99); }
   [data-theme="light"] .option { background: #fff; }
   .option:hover:not(.disabled) { border-color: var(--accent); transform: translateX(2px); }
   .option .letter {
@@ -439,6 +458,57 @@
   .rate-btn.study { background: rgba(239,68,68,0.12); color: var(--danger); border: 1px solid rgba(239,68,68,0.4); }
   .rate-btn.study:hover { background: rgba(239,68,68,0.22); }
 
+  /* ===== About ===== */
+  .about-hero {
+    display: flex; align-items: center; gap: 16px;
+    padding: 4px 0 18px; border-bottom: 1px solid var(--card-border); margin-bottom: 18px;
+  }
+  .about-photo {
+    width: 80px; height: 80px; border-radius: 50%;
+    border: 3px solid var(--accent); object-fit: cover;
+    flex-shrink: 0;
+  }
+  @media (min-width: 600px) { .about-photo { width: 96px; height: 96px; } }
+  .about-name { font-size: 19px; font-weight: 800; color: var(--text); line-height: 1.2; }
+  .about-tag { font-size: 13px; color: var(--text-dim); margin-top: 2px; }
+  .about-meta { font-size: 12px; color: var(--accent); margin-top: 6px; font-weight: 600; font-variant-numeric: tabular-nums; }
+  .about-section { margin-bottom: 18px; }
+  .about-section h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .about-list { list-style: none; padding: 0; }
+  .about-list li {
+    padding: 8px 12px; background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    border-radius: 10px; margin-bottom: 6px; font-size: 13.5px; line-height: 1.5; color: var(--text-dim);
+  }
+  [data-theme="light"] .about-list li { background: #f8fafc; }
+  .about-list li strong { color: var(--text); }
+  .about-kbd { display: flex; flex-wrap: wrap; gap: 10px; font-size: 13px; color: var(--text-dim); }
+  .about-kbd kbd {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    padding: 2px 7px; border-radius: 5px; font-family: monospace; font-size: 12px; color: var(--text);
+  }
+  .about-stats {
+    display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+  }
+  @media (min-width: 600px) { .about-stats { grid-template-columns: repeat(4, 1fr); } }
+  .about-stats > div {
+    background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    border-radius: 10px; padding: 10px 12px; text-align: center;
+    font-size: 12px; color: var(--text-dim);
+  }
+  [data-theme="light"] .about-stats > div { background: #f8fafc; }
+  .about-stats strong { display: block; font-size: 20px; color: var(--accent); margin-bottom: 4px; }
+  .about-link {
+    display: block; padding: 12px 14px; background: var(--bg-elev-2); border: 1px solid var(--card-border);
+    border-radius: 10px; color: var(--accent); font-size: 13px; text-decoration: none; word-break: break-all;
+    font-weight: 600;
+  }
+  [data-theme="light"] .about-link { background: #f8fafc; }
+  .about-link:hover { border-color: var(--accent); }
+  .about-footer {
+    text-align: center; color: var(--text-dim); font-size: 13px;
+    padding: 12px 0 4px; border-top: 1px solid var(--card-border); margin-top: 4px;
+  }
+
   /* ===== Mind Map (branching) ===== */
   .mindmap {
     position: relative;
@@ -600,6 +670,7 @@
       </div>
     </div>
     <div class="top-actions">
+      <button class="icon-btn" onclick="openAbout()" title="About">ℹ️</button>
       <button class="icon-btn" onclick="toggleTheme()" title="Toggle theme" id="theme-btn">🌙</button>
       <button class="icon-btn" onclick="confirmReset()" title="Reset progress">↻</button>
     </div>
@@ -614,6 +685,7 @@
 
       <!-- Countdown -->
       <div class="countdown-card">
+        <button class="cd-edit-btn" onclick="editExamDate()" title="Edit exam date">✏️</button>
         <div class="countdown-label">📅 Exam Day Countdown</div>
         <div class="countdown-date" id="exam-date-label">May 28, 2026</div>
         <div class="countdown-blocks">
@@ -646,7 +718,7 @@
       <div class="stat g"><div class="v" id="st-mastered">0</div><div class="l">✅ Mastered</div></div>
       <div class="stat r"><div class="v" id="st-review">0</div><div class="l">📚 Need Review</div></div>
       <div class="stat b"><div class="v" id="st-flagged">0</div><div class="l">🚩 Flagged</div></div>
-      <div class="stat w"><div class="v" id="st-best">—</div><div class="l">🏆 Best Exam</div></div>
+      <div class="stat w" id="st-best-card" onclick="bestExamAction()" style="cursor:pointer" title="Tap to take or retake the mock exam"><div class="v" id="st-best">—</div><div class="l">🏆 Best Exam</div></div>
     </div>
 
     <!-- Modes -->
@@ -774,7 +846,75 @@
         <button class="btn btn-ghost" onclick="goHome()">🏠 Home</button>
         <button class="btn btn-primary" id="res-retry" onclick="retryWrong()">🔁 Review Wrong</button>
       </div>
+      <div id="result-extra-actions" style="display:grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px;"></div>
     </div>
+  </section>
+
+  <!-- =================== ABOUT =================== -->
+  <section id="screen-about" class="screen quiz-screen">
+    <div class="card">
+      <h2>ℹ️ About this App</h2>
+      <div class="about-hero">
+        <img src="Picture of Sheikh Md Faysal.jpeg" class="about-photo" alt="Sheikh Md Faysal">
+        <div>
+          <div class="about-name">Sheikh Md Faysal</div>
+          <div class="about-tag">Developer · AmiSober</div>
+          <div class="about-meta" id="about-version">Version —</div>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <h3>📦 What's inside</h3>
+        <ul class="about-list">
+          <li><strong>222 questions</strong> drawn from 4 NJ practice exams + a 200-question pro set + 22 questions OCR'd from real NJ permit practice screenshots.</li>
+          <li>Every question has an answer + plain-language explanation.</li>
+          <li>All progress (mastered, review, flagged, mini-quiz scores) lives in your browser's local storage.</li>
+        </ul>
+      </div>
+
+      <div class="about-section">
+        <h3>🎯 Practice modes</h3>
+        <ul class="about-list">
+          <li>📖 <strong>Study Mode</strong> — sequential, resumes from where you left off</li>
+          <li>📝 <strong>Mock Exam</strong> — 50 random Qs, 20-min timer, pass at 80%</li>
+          <li>🔁 Review Wrong · 🚩 Flagged · ✅ Mastered Quiz · 🔀 Shuffle</li>
+          <li>🃏 <strong>Flashcards</strong> with 3D flip + deck filters</li>
+          <li>🗺️ <strong>Mind Map</strong> — 8 themed branches</li>
+          <li>🎯 <strong>Mini Quizzes</strong> — 22 × 10 question sets</li>
+          <li>📚 Category drills · 🔍 Full-text search</li>
+        </ul>
+      </div>
+
+      <div class="about-section">
+        <h3>⌨️ Keyboard shortcuts</h3>
+        <div class="about-kbd">
+          <span><kbd>1</kbd>–<kbd>4</kbd> answer</span>
+          <span><kbd>←</kbd> <kbd>→</kbd> navigate</span>
+          <span><kbd>Enter</kbd> next</span>
+          <span><kbd>F</kbd> flag</span>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <h3>📊 Stats</h3>
+        <div class="about-stats">
+          <div><strong id="about-total-q">222</strong> questions</div>
+          <div><strong id="about-mastered">0</strong> mastered</div>
+          <div><strong id="about-themes">8</strong> mind-map themes</div>
+          <div><strong>22</strong> mini quizzes</div>
+        </div>
+      </div>
+
+      <div class="about-section">
+        <h3>🔗 Source</h3>
+        <a href="https://github.com/SheikhMdFaysal/NJ_Knowledge_Test_Practice" class="about-link" target="_blank" rel="noopener">github.com/SheikhMdFaysal/NJ_Knowledge_Test_Practice</a>
+      </div>
+
+      <div class="about-footer">
+        Built with care — good luck on test day! 🚗
+      </div>
+    </div>
+    <button class="btn btn-ghost btn-block" style="margin-top:12px;" onclick="goHome()">⏏ Back to Home</button>
   </section>
 
   <!-- =================== FLASHCARDS =================== -->
@@ -871,14 +1011,16 @@
 <div class="credit">
   <img src="Picture of Sheikh Md Faysal.jpeg" class="photo" alt="">
   <div class="name">Sheikh Md Faysal</div>
-  <div>Built by AmiSober · Good luck on May 28! 🍀</div>
+  <div>Built by AmiSober · <a onclick="openAbout()" style="color:var(--accent);cursor:pointer;text-decoration:underline">About</a> · <span id="footer-version">v2.1.0</span></div>
 </div>
 
 <div class="toast" id="toast"></div>
 
 <script>
 /* ===================== DATA ===================== */
-const EXAM_DATE = new Date('2026-05-28T08:00:00');
+const APP_VERSION = '2.1.0';
+const APP_BUILD = '2026-05-29';
+let EXAM_DATE = new Date('2026-05-28T08:00:00');
 
 const QUESTIONS = [
 {id:1,e:1,c:"Intersections",q:"When 2 roads intersect and there are no signs or signals, it is a good practice to:",o:["Blow your horn as a warning","Be ready to stop if necessary","Pull to the right hand lane and stop","Always yield to traffic on the left"],a:1},
@@ -1599,6 +1741,23 @@ function finishQuiz() {
     startQuiz(qs, { mode: 'review' });
   };
 
+  // Mode-specific extra actions
+  const extras = document.getElementById('result-extra-actions');
+  extras.innerHTML = '';
+  if (quiz.mode && quiz.mode.startsWith('mini:')) {
+    const curIdx = quiz.miniIdx;
+    const isLast = curIdx >= MQ_COUNT - 1;
+    extras.innerHTML = `
+      <button class="btn btn-ghost" onclick="openMiniQuizzes()">📚 All Mini Quizzes</button>
+      <button class="btn btn-primary" onclick="${isLast ? 'openMiniQuizzes()' : 'startMiniQuiz(' + (curIdx+1) + ')'}">${isLast ? '🏁 Done' : '➡ Next Quiz #' + (curIdx+2)}</button>
+    `;
+  } else if (quiz.examMode) {
+    extras.innerHTML = `
+      <button class="btn btn-ghost" onclick="goHome()">🏠 Home</button>
+      <button class="btn btn-primary" onclick="startMode('exam')">🔁 Retake Mock Exam</button>
+    `;
+  }
+
   showScreen('result');
   updateHomeStats();
 }
@@ -1651,7 +1810,7 @@ function labelForMode(m) {
 
 /* ===================== HOME ===================== */
 function showScreen(s) {
-  ['home','quiz','result','list','flash','mindmap','miniquiz'].forEach(id => {
+  ['home','quiz','result','list','flash','mindmap','miniquiz','about'].forEach(id => {
     document.getElementById('screen-'+id).style.display = (s === id) ? 'block' : 'none';
   });
   // Highlight nav
@@ -1782,7 +1941,54 @@ function navTab(tab) {
   else showList(tab);
 }
 
+/* ===================== BEST EXAM ===================== */
+function bestExamAction() {
+  if (!state.bestExam) {
+    if (confirm('No mock exam taken yet.\n\nStart a 50-question timed mock exam (20 min, pass at 80%)?')) {
+      startMode('exam');
+    }
+    return;
+  }
+  const b = state.bestExam;
+  const dateStr = new Date(b.date).toLocaleDateString(undefined, { year:'numeric', month:'short', day:'numeric' });
+  const pass = b.score >= 80;
+  const msg = `🏆 Best Mock Exam Score\n\nScore: ${b.score}% (${pass ? 'PASS' : 'FAIL'})\nDate: ${dateStr}\nQuestions: ${b.total}\n\nWant to take another mock exam to beat it?`;
+  if (confirm(msg)) startMode('exam');
+}
+
+/* ===================== ABOUT ===================== */
+function openAbout() {
+  document.getElementById('about-version').textContent =
+    `Version ${APP_VERSION} · Build ${APP_BUILD}`;
+  document.getElementById('about-total-q').textContent = QUESTIONS.length;
+  document.getElementById('about-mastered').textContent = Object.keys(state.learned).length;
+  document.getElementById('about-themes').textContent = MIND_MAP.length;
+  showScreen('about');
+}
+
 /* ===================== COUNTDOWN ===================== */
+function editExamDate() {
+  const cur = state.examDate ? new Date(state.examDate) : EXAM_DATE;
+  const def = isNaN(cur.getTime()) ? '' : cur.toISOString().slice(0,10);
+  const input = prompt('Enter your exam date (YYYY-MM-DD):', def);
+  if (input == null || !input.trim()) return;
+  const d = new Date(input.trim() + 'T08:00:00');
+  if (isNaN(d.getTime())) { toast('Invalid date format — use YYYY-MM-DD'); return; }
+  state.examDate = d.toISOString();
+  EXAM_DATE = d;
+  save();
+  updateExamDateLabel();
+  updateCountdown();
+  toast('📅 Exam date updated');
+}
+
+function updateExamDateLabel() {
+  const d = EXAM_DATE;
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('exam-date-label').textContent =
+    `${months[d.getMonth()]} ${d.getDate()}, ${d.getFullYear()}`;
+}
+
 function updateCountdown() {
   const now = new Date();
   let ms = EXAM_DATE - now;
@@ -2221,6 +2427,13 @@ document.addEventListener('keydown', e => {
 
 /* ===================== INIT ===================== */
 applyTheme();
+// Restore saved exam date if any
+if (state.examDate) {
+  const d = new Date(state.examDate);
+  if (!isNaN(d.getTime())) EXAM_DATE = d;
+}
+updateExamDateLabel();
+document.getElementById('footer-version').textContent = 'v' + APP_VERSION;
 updateHomeStats();
 renderCategoryChips();
 updateCountdown();
