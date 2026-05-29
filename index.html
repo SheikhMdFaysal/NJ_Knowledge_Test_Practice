@@ -382,6 +382,53 @@
   .screen { animation: fadeIn 0.25s; }
   @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+  /* ===== Exam mode UI ===== */
+  .option.selected:not(.correct):not(.wrong) {
+    border-color: var(--accent-2);
+    background: rgba(6,182,212,0.12);
+    transform: translateX(2px);
+  }
+  .option.selected:not(.correct):not(.wrong) .letter {
+    background: var(--accent-2); color: #042f2e;
+  }
+  .exam-tally {
+    display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px;
+    margin-bottom: 14px;
+  }
+  .tally-pill {
+    padding: 8px 6px; border-radius: 10px; text-align: center;
+    font-weight: 700; font-size: 15px;
+    border: 1px solid var(--card-border);
+  }
+  .tally-pill .lbl {
+    display: block; font-size: 10px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.4px; margin-top: 2px; opacity: 0.85;
+  }
+  .tally-pill.t-correct { background: rgba(16,185,129,0.15); color: var(--accent); border-color: rgba(16,185,129,0.45); }
+  .tally-pill.t-wrong { background: rgba(239,68,68,0.12); color: var(--danger); border-color: rgba(239,68,68,0.45); }
+  .tally-pill.t-skipped { background: rgba(245,158,11,0.13); color: var(--warn); border-color: rgba(245,158,11,0.45); }
+  .exam-bottom-tally {
+    position: sticky; bottom: 78px; z-index: 70;
+    background: color-mix(in srgb, var(--bg) 92%, transparent);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--card-border);
+    border-radius: 14px;
+    padding: 8px; margin-top: 14px;
+  }
+  @media (max-width: 600px) { .exam-bottom-tally { bottom: 90px; } }
+  .revisit-tag {
+    background: rgba(245,158,11,0.15); color: var(--warn);
+    border: 1px solid rgba(245,158,11,0.35);
+  }
+  .pass-banner {
+    margin-bottom: 14px; padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(16,185,129,0.18), rgba(6,182,212,0.12));
+    border: 1px solid rgba(16,185,129,0.4);
+    border-radius: 12px; text-align: center; font-weight: 700;
+    color: var(--accent); font-size: 14px;
+    animation: slideIn 0.4s;
+  }
+
   /* ===== Keyboard hint ===== */
   .kbd-hint {
     font-size: 11px; color: var(--text-muted); margin-top: 12px; text-align: center;
@@ -811,11 +858,17 @@
         <span class="quiz-tag cat" id="q-cat">—</span>
         <span class="quiz-tag" id="q-mode">Study</span>
         <span class="quiz-tag timer hidden" id="q-timer">20:00</span>
+        <span class="quiz-tag revisit-tag hidden" id="q-revisit">🔁 Revisit</span>
         <button class="flag-btn" onclick="jumpToQuestion()" title="Jump to a specific question">↗</button>
         <button class="flag-btn" id="flag-btn" onclick="toggleFlag()" title="Flag">🚩</button>
       </div>
       <div class="top-question-bar">
         <div class="bar"><i id="q-bar" style="width:0%"></i></div>
+      </div>
+      <div class="exam-tally hidden" id="exam-tally-top">
+        <div class="tally-pill t-correct"><span id="tally-correct">0</span><span class="lbl">✓ Correct</span></div>
+        <div class="tally-pill t-wrong"><span id="tally-wrong">0</span><span class="lbl">✗ Wrong</span></div>
+        <div class="tally-pill t-skipped"><span id="tally-skipped">0</span><span class="lbl">⏭ Skipped</span></div>
       </div>
       <div class="question-text" id="q-text"></div>
       <div class="options" id="q-options"></div>
@@ -1551,11 +1604,18 @@ function startCategory(cat) {
 
 function startQuiz(qs, opts) {
   quiz = {
-    questions: qs,
+    questions: qs.slice(), // we may append skipped Qs to revisit
+    originalLen: qs.length,
     idx: Math.max(0, Math.min(opts.resumeIdx || 0, qs.length - 1)),
     mode: opts.mode,
     examMode: !!opts.examMode,
-    picks: {},
+    picks: {},        // qId -> selected option index (tentative or final)
+    locked: {},       // qId -> true once Submit confirmed
+    skipped: {},      // qId -> true if user skipped it
+    revisit: {},      // qId -> true if this slot is a revisit
+    correctCount: 0,
+    wrongCount: 0,
+    skippedCount: 0,
     startedAt: Date.now(),
     timerEnd: opts.timerSec ? (Date.now() + opts.timerSec * 1000) : 0,
     timerInterval: null
@@ -1580,13 +1640,26 @@ function jumpToQuestion() {
 function renderQuestion() {
   const q = quiz.questions[quiz.idx];
   const total = quiz.questions.length;
-  document.getElementById('q-idx').textContent = quiz.idx + 1;
-  document.getElementById('q-total').textContent = total;
+  // In exam mode, show "Q X/50" during main pass, then "Revisit Y/Z" during skip catch-up
+  if (quiz.examMode && quiz.idx >= quiz.originalLen) {
+    document.getElementById('q-idx').textContent = (quiz.idx - quiz.originalLen + 1);
+    document.getElementById('q-total').textContent = (total - quiz.originalLen) + ' (revisit)';
+  } else {
+    document.getElementById('q-idx').textContent = quiz.idx + 1;
+    document.getElementById('q-total').textContent = quiz.examMode ? quiz.originalLen : total;
+  }
   document.getElementById('q-cat').textContent = q.c;
   document.getElementById('q-mode').textContent = labelForMode(quiz.mode);
   document.getElementById('q-bar').style.width = ((quiz.idx)/total*100) + '%';
   document.getElementById('q-text').textContent = q.q;
   document.getElementById('flag-btn').classList.toggle('active', !!state.flagged[q.id]);
+  const isRevisitSlot = quiz.examMode && quiz.idx >= (quiz.originalLen || 0) && quiz.revisit[q.id];
+  document.getElementById('q-revisit').classList.toggle('hidden', !isRevisitSlot);
+
+  // Live tally only in exam mode
+  const tallyTop = document.getElementById('exam-tally-top');
+  tallyTop.classList.toggle('hidden', !quiz.examMode);
+  if (quiz.examMode) updateTally();
 
   const opts = document.getElementById('q-options');
   opts.innerHTML = q.o.map((opt, i) =>
@@ -1597,43 +1670,167 @@ function renderQuestion() {
   ).join('');
   document.getElementById('q-explanation').innerHTML = '';
 
-  // Restore prior pick in this session
-  if (quiz.picks[q.id] != null) {
-    revealAnswer(quiz.picks[q.id], false);
+  // Restore prior pick / state
+  if (quiz.examMode) {
+    if (quiz.locked[q.id]) {
+      // Already submitted — show locked reveal
+      revealAnswer(quiz.picks[q.id], true);
+      renderExamControls('next');
+    } else if (quiz.picks[q.id] != null) {
+      // Tentative pick exists, show selected highlight
+      highlightSelected(quiz.picks[q.id]);
+      renderExamControls('submit');
+    } else {
+      renderExamControls('submit');
+    }
+  } else {
+    if (quiz.picks[q.id] != null) {
+      revealAnswer(quiz.picks[q.id], false);
+    }
+    document.getElementById('prev-btn').disabled = (quiz.idx === 0);
+    document.getElementById('next-btn').textContent = (quiz.idx === total - 1) ? 'Finish ✓' : 'Next →';
+    // Restore standard controls in case they were swapped
+    restoreStandardControls();
   }
+}
 
-  document.getElementById('prev-btn').disabled = (quiz.idx === 0);
-  document.getElementById('next-btn').textContent = (quiz.idx === total - 1) ? 'Finish ✓' : 'Next →';
+function highlightSelected(i) {
+  document.querySelectorAll('.option').forEach((el, idx) => {
+    el.classList.remove('selected');
+    if (idx === i) el.classList.add('selected');
+  });
+}
+
+function renderExamControls(phase) {
+  // phase: 'submit' (select & submit/skip) or 'next' (after reveal)
+  const ctr = document.querySelector('.q-controls');
+  if (!ctr) return;
+  if (phase === 'submit') {
+    ctr.innerHTML = `
+      <button class="btn btn-ghost" id="skip-btn" onclick="skipQuestion()">⏭ Skip</button>
+      <button class="btn btn-primary" id="submit-btn" onclick="submitAnswer()">Submit ✓</button>
+    `;
+  } else {
+    const last = quiz.idx === quiz.questions.length - 1;
+    ctr.innerHTML = `
+      <button class="btn btn-ghost" id="prev-btn" onclick="prevQuestion()" disabled style="visibility:hidden"></button>
+      <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">${last ? 'Finish ✓' : 'Next →'}</button>
+    `;
+  }
+}
+
+function restoreStandardControls() {
+  const ctr = document.querySelector('.q-controls');
+  if (!ctr) return;
+  if (!document.getElementById('prev-btn') || !document.getElementById('next-btn') ||
+      document.getElementById('submit-btn') || document.getElementById('skip-btn')) {
+    ctr.innerHTML = `
+      <button class="btn btn-ghost" id="prev-btn" onclick="prevQuestion()">← Previous</button>
+      <button class="btn btn-primary" id="next-btn" onclick="nextQuestion()">Next →</button>
+    `;
+  }
+}
+
+function updateTally() {
+  document.getElementById('tally-correct').textContent = quiz.correctCount;
+  document.getElementById('tally-wrong').textContent = quiz.wrongCount;
+  document.getElementById('tally-skipped').textContent = quiz.skippedCount;
 }
 
 function pickOption(i) {
   const q = quiz.questions[quiz.idx];
-  if (quiz.picks[q.id] != null) return; // already answered (locked per question in exam mode too)
-  quiz.picks[q.id] = i;
 
   if (quiz.examMode) {
-    // In exam mode: record but don't reveal until finish
-    document.querySelectorAll('.option').forEach((el, idx) => {
-      el.classList.toggle('correct', idx === i);
-      el.classList.add('disabled');
-    });
-    // recolor as a "selected" rather than correct
-    document.querySelectorAll('.option').forEach((el, idx) => {
-      if (idx === i) { el.classList.remove('correct'); el.style.borderColor = 'var(--accent)'; el.style.background = 'rgba(16,185,129,0.10)'; }
-    });
+    // Tentative selection — allow re-picking until Submit
+    if (quiz.locked[q.id]) return;
+    quiz.picks[q.id] = i;
+    highlightSelected(i);
+    return;
+  }
+
+  // Standard (non-exam) modes — original behavior
+  if (quiz.picks[q.id] != null) return;
+  quiz.picks[q.id] = i;
+  revealAnswer(i, true);
+  if (i === q.a) {
+    state.learned[q.id] = true;
+    delete state.wrong[q.id];
   } else {
-    revealAnswer(i, true);
-    // Update mastered/wrong banks
-    if (i === q.a) {
-      state.learned[q.id] = true;
-      delete state.wrong[q.id];
-    } else {
-      state.wrong[q.id] = true;
-      delete state.learned[q.id];
-    }
-    state.answered[q.id] = i;
-    save();
-    updateHomeStats();
+    state.wrong[q.id] = true;
+    delete state.learned[q.id];
+  }
+  state.answered[q.id] = i;
+  save();
+  updateHomeStats();
+}
+
+function submitAnswer() {
+  if (!quiz?.examMode) return;
+  const q = quiz.questions[quiz.idx];
+  if (quiz.locked[q.id]) return;
+  const pick = quiz.picks[q.id];
+  if (pick == null) { toast('Pick an answer first, or tap Skip.'); return; }
+  const letter = String.fromCharCode(65 + pick);
+  if (!confirm(`Submit answer ${letter}?\n\n"${q.o[pick]}"\n\n(You can't change it after this.)`)) return;
+
+  quiz.locked[q.id] = true;
+  if (quiz.skipped[q.id]) {
+    // Was revisited from skip queue — decrement skipped count
+    quiz.skippedCount = Math.max(0, quiz.skippedCount - 1);
+    delete quiz.skipped[q.id];
+  }
+  if (pick === q.a) {
+    quiz.correctCount++;
+    state.learned[q.id] = true;
+    delete state.wrong[q.id];
+  } else {
+    quiz.wrongCount++;
+    state.wrong[q.id] = true;
+    delete state.learned[q.id];
+  }
+  state.answered[q.id] = pick;
+  save();
+  updateTally();
+  revealAnswer(pick, true);
+  renderExamControls('next');
+
+  // Auto-pass at 40 correct (NJ MVC passing = 40/50 = 80%)
+  if (quiz.correctCount >= 40) {
+    showPassBanner();
+    setTimeout(() => finishQuiz(), 1400);
+  }
+}
+
+function skipQuestion() {
+  if (!quiz?.examMode) return;
+  const q = quiz.questions[quiz.idx];
+  if (quiz.locked[q.id]) return;
+  if (!quiz.skipped[q.id]) {
+    quiz.skipped[q.id] = true;
+    quiz.skippedCount++;
+  }
+  // Always push to end so it reappears (even if skipped on a revisit)
+  quiz.questions.push(q);
+  quiz.revisit[q.id] = true;
+  delete quiz.picks[q.id]; // clear tentative pick
+  toast('⏭ Skipped — you\'ll see it again at the end');
+  advanceExam();
+}
+
+function showPassBanner() {
+  const banner = document.createElement('div');
+  banner.className = 'pass-banner';
+  banner.innerHTML = '🎉 <strong>You\'ve reached 40 correct — that\'s a passing score!</strong><br><span style="font-weight:500;font-size:12px;opacity:0.9">Showing your results…</span>';
+  const card = document.querySelector('#screen-quiz .card');
+  card.insertBefore(banner, card.firstChild);
+}
+
+function advanceExam() {
+  if (quiz.idx >= quiz.questions.length - 1) {
+    finishQuiz();
+  } else {
+    quiz.idx++;
+    renderQuestion();
   }
 }
 
@@ -1655,6 +1852,7 @@ function revealAnswer(i, withExplanation) {
 }
 
 function nextQuestion() {
+  if (quiz.examMode) return advanceExam();
   if (quiz.idx >= quiz.questions.length - 1) return finishQuiz();
   quiz.idx++;
   if (quiz.mode === 'study') { state.studyIdx = quiz.idx; save(); }
@@ -1680,21 +1878,29 @@ function finishQuiz() {
   if (quiz.timerInterval) { clearInterval(quiz.timerInterval); quiz.timerInterval = null; }
   let correct = 0;
   const wrongIds = [];
-  quiz.questions.forEach(q => {
-    const pick = quiz.picks[q.id];
-    if (pick === q.a) {
-      correct++;
-      if (quiz.examMode) { state.learned[q.id] = true; delete state.wrong[q.id]; }
-    } else if (pick != null) {
-      wrongIds.push(q.id);
-      if (quiz.examMode) { state.wrong[q.id] = true; delete state.learned[q.id]; }
-    } else if (quiz.examMode) {
-      // unanswered = wrong in exam mode
-      wrongIds.push(q.id);
-      state.wrong[q.id] = true;
-    }
-  });
-  const total = quiz.questions.length;
+
+  if (quiz.examMode) {
+    // Use the live tally; questions not yet submitted count as wrong
+    correct = quiz.correctCount;
+    // Collect IDs of wrong + still-skipped + not-yet-submitted questions
+    const seen = new Set();
+    quiz.questions.forEach(q => {
+      if (seen.has(q.id)) return;
+      seen.add(q.id);
+      const pick = quiz.picks[q.id];
+      const locked = quiz.locked[q.id];
+      if (locked && pick !== q.a) wrongIds.push(q.id);
+      else if (!locked) wrongIds.push(q.id); // skipped or never answered
+    });
+  } else {
+    quiz.questions.forEach(q => {
+      const pick = quiz.picks[q.id];
+      if (pick === q.a) correct++;
+      else if (pick != null) wrongIds.push(q.id);
+    });
+  }
+
+  const total = quiz.examMode ? quiz.originalLen : quiz.questions.length;
   const pct = Math.round(correct / total * 100);
   const elapsed = Math.round((Date.now() - quiz.startedAt) / 1000);
 
@@ -1727,8 +1933,15 @@ function finishQuiz() {
 
   let icon, title, sub;
   if (quiz.examMode) {
-    if (pct >= 80) { icon='🎉'; title='You passed!'; sub=`Mock exam passing score is 80%. You're ready for May 28!`; }
-    else { icon='📚'; title='Keep practicing'; sub=`You need 80% to pass. ${total-correct} to review.`; }
+    if (correct >= 40) {
+      icon='🎉';
+      title='Knowledge Test Passed!';
+      sub=`You got ${correct} of ${total} correct. Real NJ MVC exam pass mark is 40/50 — you're ready.`;
+    } else {
+      icon='📚';
+      title='Keep practicing';
+      sub=`${correct} of ${total} correct — need 40 to pass. ${quiz.skippedCount ? `Skipped & unanswered count as wrong.` : `Review the ${total-correct} you missed.`}`;
+    }
   } else {
     if (correct === total) { icon='🏆'; title='Perfect!'; sub='Mastered every question in this session.'; }
     else if (pct >= 80) { icon='👍'; title='Strong work'; sub=`${correct} correct, ${total-correct} to review.`; }
@@ -2422,9 +2635,24 @@ document.addEventListener('keydown', e => {
     const i = parseInt(e.key,10) - 1;
     const q = quiz?.questions[quiz.idx];
     if (q && i < q.o.length) pickOption(i);
-  } else if (e.key === 'ArrowRight' || e.key === 'Enter') { nextQuestion(); }
-  else if (e.key === 'ArrowLeft') { prevQuestion(); }
-  else if (e.key.toLowerCase() === 'f') { toggleFlag(); }
+  } else if (e.key === 'Enter') {
+    if (quiz?.examMode) {
+      const q = quiz.questions[quiz.idx];
+      if (quiz.locked[q.id]) advanceExam();
+      else submitAnswer();
+    } else nextQuestion();
+  } else if (e.key === 'ArrowRight') {
+    if (quiz?.examMode) {
+      const q = quiz.questions[quiz.idx];
+      if (quiz.locked[q.id]) advanceExam();
+    } else nextQuestion();
+  } else if (e.key === 'ArrowLeft') {
+    if (!quiz?.examMode) prevQuestion();
+  } else if (e.key.toLowerCase() === 'f') { toggleFlag(); }
+  else if (e.key.toLowerCase() === 's' && quiz?.examMode) {
+    const q = quiz.questions[quiz.idx];
+    if (!quiz.locked[q.id]) skipQuestion();
+  }
 });
 
 /* ===================== INIT ===================== */
